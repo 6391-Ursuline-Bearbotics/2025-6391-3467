@@ -33,7 +33,7 @@
             "/AdvantageKit/RealOutputs/SwerveStates/Setpoints/0/angle",
             "/AdvantageKit/Drive/Module0",
             "/AdvantageKit/Drive/Module0/TurnAbsolutePosition",
-            "/AdvantageKit/RealOutputs/ClawRollerLaserCAN",
+            "/AdvantageKit/RealOutputs/ClawRollerDS",
             "/AdvantageKit/RealOutputs/Elevator",
             "/AdvantageKit/RealOutputs/Arm",
             "/AdvantageKit/RealOutputs/SwerveChassisSpeeds",
@@ -299,7 +299,7 @@
                 "leftSources": [
                   {
                     "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/IntakeLaserCAN/Current Distance",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/IntakeDS/Current Distance",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -309,7 +309,7 @@
                   },
                   {
                     "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/IntakeLaserCAN/Trigger Distance",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/IntakeDS/Trigger Distance",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -319,7 +319,7 @@
                   },
                   {
                     "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/ClawRollerLaserCAN/Current Distance",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/ClawRollerDS/Current Distance",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -329,7 +329,7 @@
                   },
                   {
                     "type": "stepped",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/ClawRollerLaserCAN/Trigger Distance",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/ClawRollerDS/Trigger Distance",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -342,7 +342,7 @@
                 "discreteSources": [
                   {
                     "type": "stripes",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/ClawRollerLaserCAN/Triggered",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/ClawRollerDS/Triggered",
                     "logType": "Boolean",
                     "visible": true,
                     "options": {
@@ -351,7 +351,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/IntakeLaserCAN/Triggered",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/IntakeDS/Triggered",
                     "logType": "Boolean",
                     "visible": true,
                     "options": {

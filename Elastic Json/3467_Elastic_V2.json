@@ -1738,7 +1738,7 @@
       "grid_layout": {
         "layouts": [
           {
-            "title": "ClawRollerLaserCAN",
+            "title": "ClawRollerDS",
             "x": 950.0,
             "y": 300.0,
             "width": 300.0,
@@ -1756,7 +1756,7 @@
                 "height": 150.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/AdvantageKit/ClawRollerLaserCAN/Distance",
+                  "topic": "/AdvantageKit/ClawRollerDS/Distance",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": false
@@ -1765,7 +1765,7 @@
             ]
           },
           {
-            "title": "IntakeLaserCAN",
+            "title": "IntakeDS",
             "x": 650.0,
             "y": 300.0,
             "width": 300.0,
@@ -1783,7 +1783,7 @@
                 "height": 150.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/AdvantageKit/IntakeLaserCAN/Distance",
+                  "topic": "/AdvantageKit/IntakeDS/Distance",
                   "period": 0.06,
                   "data_type": "double",
                   "show_submit_button": false
@@ -1853,7 +1853,7 @@
             "height": 100.0,
             "type": "Boolean Box",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/ClawRollerLaserCAN/Triggered",
+              "topic": "/AdvantageKit/RealOutputs/ClawRollerDS/Triggered",
               "period": 0.06,
               "data_type": "boolean",
               "true_color": 4283215696,
@@ -1870,7 +1870,7 @@
             "height": 100.0,
             "type": "Boolean Box",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/IntakeLaserCAN/Triggered",
+              "topic": "/AdvantageKit/RealOutputs/IntakeDS/Triggered",
               "period": 0.06,
               "data_type": "boolean",
               "true_color": 4283215696,
