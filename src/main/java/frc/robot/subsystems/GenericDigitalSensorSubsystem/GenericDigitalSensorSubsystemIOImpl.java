@@ -24,7 +24,7 @@ public class GenericDigitalSensorSubsystemIOImpl implements GenericDigitalSensor
 
     public Boolean getMeasurement()
     {
-        return di.get();
+        return !di.get();
     }
 
     @Override

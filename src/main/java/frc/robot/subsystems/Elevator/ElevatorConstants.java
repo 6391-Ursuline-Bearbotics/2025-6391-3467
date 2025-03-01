@@ -32,7 +32,7 @@ public final class ElevatorConstants {
 
         kSubSysConstants.kLeaderMotor = Ports.ELEVATOR_MAIN;
         kSubSysConstants.kFollowMotor = Ports.ELEVATOR_FOLLOWER;
-        kSubSysConstants.kFollowerOpposesMain = false;
+        kSubSysConstants.kFollowerOpposesMain = true;
 
         // Using TalonFX internal encoder
         kSubSysConstants.kCANcoder = null;
@@ -74,16 +74,16 @@ public final class ElevatorConstants {
 
 
         /* REAL system profile constants */
-        kSubSysConstants.kMotorConfig.Slot0.kP = 600;
+        kSubSysConstants.kMotorConfig.Slot0.kP = 40;
         kSubSysConstants.kMotorConfig.Slot0.kI = 0;
-        kSubSysConstants.kMotorConfig.Slot0.kD = 50;
+        kSubSysConstants.kMotorConfig.Slot0.kD = 10;
         kSubSysConstants.kMotorConfig.Slot0.GravityType = GravityTypeValue.Elevator_Static;
-        kSubSysConstants.kMotorConfig.Slot0.kG = 5;
+        kSubSysConstants.kMotorConfig.Slot0.kG = 25;
         kSubSysConstants.kMotorConfig.Slot0.kS = 0;
         kSubSysConstants.kMotorConfig.Slot0.kV = 0;
         kSubSysConstants.kMotorConfig.Slot0.kA = 0;
-        kSubSysConstants.kMotorConfig.MotionMagic.MotionMagicCruiseVelocity = 400;
-        kSubSysConstants.kMotorConfig.MotionMagic.MotionMagicAcceleration = 40;
+        kSubSysConstants.kMotorConfig.MotionMagic.MotionMagicCruiseVelocity = 200;
+        kSubSysConstants.kMotorConfig.MotionMagic.MotionMagicAcceleration = 20;
         kSubSysConstants.kMotorConfig.MotionMagic.MotionMagicJerk = 0;
 
         /* SIM system profile constants */

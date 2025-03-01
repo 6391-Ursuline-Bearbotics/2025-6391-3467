@@ -31,7 +31,7 @@ public final class ClawRollerConstants {
 
         kSubSysConstants.kMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         kSubSysConstants.kMotorConfig.MotorOutput.Inverted =
-            InvertedValue.CounterClockwise_Positive;
+            InvertedValue.Clockwise_Positive;
         kSubSysConstants.kMotorConfig.Voltage.PeakForwardVoltage = 12.0;
         kSubSysConstants.kMotorConfig.Voltage.PeakReverseVoltage = -12.0;
 

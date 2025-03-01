@@ -70,7 +70,7 @@ public class RobotContainer {
     public final Drive m_drive;
     private final Arm m_profiledArm;
     private final Elevator m_profiledElevator;
-    private final Climber m_profiledClimber;
+    // private final Climber m_profiledClimber;
     private final ClawRoller m_clawRoller;
     private final ClawRollerDS m_ClawRollerDS;
     public final IntakeDS m_IntakeDS;
@@ -107,11 +107,7 @@ public class RobotContainer {
                 m_ClawRollerDS = new ClawRollerDS(new ClawRollerDSIOReal());
                 m_IntakeDS = new IntakeDS(new IntakeDSIOReal());
 
-                m_vision =
-                    new Vision(
-                        m_drive,
-                        new VisionIOPhotonVision(camera0Name, robotToCamera0),
-                        new VisionIOPhotonVision(camera1Name, robotToCamera1));
+                m_vision = new Vision(m_drive);
 
                 // break;
 
@@ -127,7 +123,7 @@ public class RobotContainer {
 
                 // m_profiledArm = new Arm(new ArmIO() {}, true);
                 // m_profiledElevator = new Elevator(new ElevatorIO() {}, true);
-                m_profiledClimber = new Climber(new ClimberIO() {}, true);
+                // m_profiledClimber = new Climber(new ClimberIO() {}, true);
                 // m_clawRoller = new ClawRoller(new ClawRollerIO() {}, true);
                 // m_ClawRollerDS = new ClawRollerDS(new ClawRollerDSIO() {});
                 // m_IntakeDS = new IntakeDS(new IntakeDSIO() {});
@@ -158,20 +154,12 @@ public class RobotContainer {
 
                 m_profiledArm = new Arm(new ArmIOSim(), true);
                 m_profiledElevator = new Elevator(new ElevatorIOSim(), true);
-                m_profiledClimber = new Climber(new ClimberIOSim(), true);
+                // m_profiledClimber = new Climber(new ClimberIOSim(), true);
                 m_clawRoller = new ClawRoller(new ClawRollerIOSim(), true);
                 m_ClawRollerDS = new ClawRollerDS(new ClawRollerDSIOSim());
                 m_IntakeDS = new IntakeDS(new IntakeDSIOSim());
 
-                m_vision =
-                    new Vision(
-                        m_drive,
-                        new VisionIOPhotonVisionSim(
-                            camera0Name, robotToCamera0,
-                            m_driveSimulation::getSimulatedDriveTrainPose),
-                        new VisionIOPhotonVisionSim(
-                            camera1Name, robotToCamera1,
-                            m_driveSimulation::getSimulatedDriveTrainPose));
+                m_vision = new Vision(m_drive);
 
                 break;
 
@@ -189,12 +177,12 @@ public class RobotContainer {
 
                 m_profiledArm = new Arm(new ArmIO() {}, true);
                 m_profiledElevator = new Elevator(new ElevatorIO() {}, true);
-                m_profiledClimber = new Climber(new ClimberIO() {}, true);
+                // m_profiledClimber = new Climber(new ClimberIO() {}, true);
                 m_clawRoller = new ClawRoller(new ClawRollerIO() {}, true);
                 m_ClawRollerDS = new ClawRollerDS(new ClawRollerDSIO() {});
                 m_IntakeDS = new IntakeDS(new IntakeDSIO() {});
 
-                m_vision = new Vision(m_drive, new VisionIO() {}, new VisionIO() {});
+                m_vision = new Vision(m_drive);
                 break;
         }
 
@@ -411,16 +399,16 @@ public class RobotContainer {
             .leftTrigger().and(isCoralMode)
             .whileTrue(
                 m_clawRoller.setStateCommand(ClawRoller.State.INTAKE)
-                    .andThen(
-                        m_superStruct
-                            .getTransitionCommand(Arm.State.CORAL_INTAKE,
-                                Elevator.State.CORAL_INTAKE))
+                    /*
+                     * .andThen( m_superStruct .getTransitionCommand(Arm.State.CORAL_INTAKE,
+                     * Elevator.State.CORAL_INTAKE))
+                     */
                     .andThen(m_driver.rumbleForTime(1, 1))
-                    .andThen(Commands
-                        .waitUntil(m_IntakeDS.triggered))
-                    .andThen(Commands
-                        .waitUntil(m_IntakeDS.triggered.negate()
-                            .and(m_ClawRollerDS.triggered)))
+                    /*
+                     * .andThen(Commands .waitUntil(m_IntakeDS.triggered)) .andThen(Commands
+                     * .waitUntil(m_IntakeDS.triggered.negate() .and(m_ClawRollerDS.triggered)))
+                     */
+                    .andThen(Commands.waitUntil(m_ClawRollerDS.triggered))
                     .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL))
                     .andThen(
                         m_superStruct

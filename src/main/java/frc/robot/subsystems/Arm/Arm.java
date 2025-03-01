@@ -21,18 +21,19 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
         new LoggedTunableNumber("Arm/PositionTuningSP", 124.0);
 
     // .14 rot is the max extension
+    private static final double ANGLE = -2.48;
 
     @RequiredArgsConstructor
     @Getter
     public enum State implements TargetState {
         // HOMING(0.0, 0.0, ProfileType.MM_POSITION),
-        STOW(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(125.18))),
-        // CORAL_INTAKE(() -> 0.42, ProfileType.MM_POSITION),
-        CORAL_INTAKE(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(137.7))),
-        LEVEL_1(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(115.13))),
-        LEVEL_2(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(94.48))),
-        LEVEL_3(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(94.48))),
-        LEVEL_4(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(100.0))),
+        STOW(new ProfileType.MM_POSITION(() -> ANGLE)),
+        CORAL_INTAKE(new ProfileType.MM_POSITION(() -> -0.8)),
+        LEVEL_1(new ProfileType.MM_POSITION(() -> -1.7)),
+        LEVEL_2(new ProfileType.MM_POSITION(() -> ANGLE)),
+        LEVEL_3(new ProfileType.MM_POSITION(() -> ANGLE)),
+        LEVEL_4(new ProfileType.MM_POSITION(() -> ANGLE)),
+        DUNK(new ProfileType.MM_POSITION(() -> -1.403)),
         CLIMB(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(50.4))),
         ALGAE_LOW(new ProfileType.MM_POSITION(() -> .2377)),
         ALGAE_HIGH(new ProfileType.MM_POSITION(() -> .2446)),
