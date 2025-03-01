@@ -38,7 +38,7 @@ public final class ElevatorConstants {
         kSubSysConstants.kCANcoder = null;
         kSubSysConstants.kMotorConfig.Feedback.FeedbackSensorSource =
             FeedbackSensorSourceValue.RotorSensor;
-        kSubSysConstants.kMotorConfig.Feedback.SensorToMechanismRatio = 9.6;
+        kSubSysConstants.kMotorConfig.Feedback.SensorToMechanismRatio = 5.0;
         kSubSysConstants.kMotorConfig.Feedback.RotorToSensorRatio = 1.0;
 
         // Using a remote CANcoder

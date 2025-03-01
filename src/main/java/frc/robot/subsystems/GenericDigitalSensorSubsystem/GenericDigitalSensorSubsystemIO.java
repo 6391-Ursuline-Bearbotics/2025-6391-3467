@@ -5,7 +5,7 @@ import org.littletonrobotics.junction.AutoLog;
 public interface GenericDigitalSensorSubsystemIO {
     @AutoLog
     abstract class DigitalSensorIOInputs {
-        public Boolean tripped;
+        public boolean tripped;
     }
 
     default void updateInputs(DigitalSensorIOInputs inputs)

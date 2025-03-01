@@ -58,6 +58,7 @@ public class RobotContainer {
 
     // Controllers
     private final WindupXboxController m_driver = new WindupXboxController(0);
+    private final WindupXboxController m_operator = new WindupXboxController(0);
 
     // Dashboard inputs
     private final LoggedDashboardChooser<Command> m_autoChooser;
@@ -270,6 +271,17 @@ public class RobotContainer {
     {
         // Default command, normal field-relative drive
         m_drive.setDefaultCommand(joystickDrive());
+
+        // Reset gyro to 0° when start button is pressed
+        final Runnable resetGyro =
+            Constants.currentMode == Constants.Mode.SIM
+                ? () -> m_drive.setPose(
+                    m_driveSimulation
+                        .getSimulatedDriveTrainPose()) // reset odometry to actual robot pose during
+                // simulation
+                : () -> m_drive.setPose(
+                    new Pose2d(m_drive.getPose().getTranslation(), new Rotation2d())); // zero gyro
+        m_driver.start().onTrue(Commands.runOnce(resetGyro, m_drive).ignoringDisable(true));
 
         // Driver Right Bumper: Approach Nearest Right-Side Reef Branch
         m_driver.rightBumper().and(isCoralMode)
@@ -494,7 +506,7 @@ public class RobotContainer {
 
         // Driver Right Bumper: Toggle between Coral and Algae Modes.
         // Make sure the Approach nearest reef face does not mess with this
-        m_driver.start().and(m_driver.leftBumper().negate())
+        m_driver.back().and(m_driver.leftBumper().negate())
             .onTrue(setCoralAlgaeModeCommand()
                 .andThen(m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW))
                 .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF)));
@@ -545,7 +557,7 @@ public class RobotContainer {
             "Home",
             m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW, 0.1, 0.8));
 
-        // Wait for intake laserCAN to be triggered
+        // Wait for EE sensor to be triggered
         NamedCommands.registerCommand("SuperstructureIntake",
             m_superStruct
                 .getTransitionCommand(Arm.State.CORAL_INTAKE,

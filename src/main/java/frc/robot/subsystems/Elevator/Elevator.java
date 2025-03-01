@@ -150,7 +150,7 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
                 Logger.recordOutput(
                     "Elevator/StaticCharacterizationOutput", state.characterizationOutput);
             })
-            .until(Commands.runOnce(() -> inputs.velocityRps * 2 * Math.PI >= staticCharacterizationVelocityThresh)
+            .until(() -> inputs.velocityRps * 2 * Math.PI >= staticCharacterizationVelocityThresh
                 .get())
             .finallyDo(
                 () -> {
