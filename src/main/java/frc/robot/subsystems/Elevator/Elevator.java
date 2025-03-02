@@ -27,7 +27,7 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
     static LoggedTunableNumber positionTuning =
         new LoggedTunableNumber("Elevator/PositionTuningSP", 0.05);
 
-    private static final double BOTTOM = -0.049;
+    private static final double BOTTOM = 0.02;
 
     @RequiredArgsConstructor
     @Getter

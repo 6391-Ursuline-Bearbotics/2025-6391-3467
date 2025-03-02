@@ -28,7 +28,7 @@ public final class ElevatorConstants {
         // It will be used even if you pass a smaller value into atPosition().
         // If you want to specify a larger value on an individual call basis, then you
         // should pass that value into atPosition()
-        kSubSysConstants.kminTolerance = 0.05;
+        kSubSysConstants.kminTolerance = 0.07;
 
         kSubSysConstants.kLeaderMotor = Ports.ELEVATOR_MAIN;
         kSubSysConstants.kFollowMotor = Ports.ELEVATOR_FOLLOWER;
