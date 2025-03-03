@@ -27,7 +27,7 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
     static LoggedTunableNumber positionTuning =
         new LoggedTunableNumber("Elevator/PositionTuningSP", 0.05);
 
-    private static final double BOTTOM = 0.02;
+    private static final double BOTTOM = 0.065;
 
     @RequiredArgsConstructor
     @Getter
@@ -36,9 +36,9 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
         STOW(new ProfileType.MM_POSITION(() -> BOTTOM)),
         CORAL_INTAKE(new ProfileType.MM_POSITION(() -> BOTTOM)),
         LEVEL_1(new ProfileType.MM_POSITION(() -> BOTTOM)),
-        LEVEL_2(new ProfileType.MM_POSITION(() -> 0.803)),
-        LEVEL_3(new ProfileType.MM_POSITION(() -> 2.217)),
-        LEVEL_4(new ProfileType.MM_POSITION(() -> 4.47)),
+        LEVEL_2(new ProfileType.MM_POSITION(() -> 2.2)),
+        LEVEL_3(new ProfileType.MM_POSITION(() -> 5.2)),
+        LEVEL_4(new ProfileType.MM_POSITION(() -> 9.30)),
         CLIMB(new ProfileType.MM_POSITION(() -> 0.05)),
         ALGAE_LOW(new ProfileType.MM_POSITION(() -> 1.903)),
         ALGAE_HIGH(new ProfileType.MM_POSITION(() -> 3.406)),

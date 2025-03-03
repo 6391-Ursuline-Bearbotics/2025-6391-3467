@@ -74,12 +74,12 @@ public final class ElevatorConstants {
 
 
         /* REAL system profile constants */
-        kSubSysConstants.kMotorConfig.Slot0.kP = 40;
+        kSubSysConstants.kMotorConfig.Slot0.kP = 50;
         kSubSysConstants.kMotorConfig.Slot0.kI = 0;
-        kSubSysConstants.kMotorConfig.Slot0.kD = 10;
+        kSubSysConstants.kMotorConfig.Slot0.kD = 5;
         kSubSysConstants.kMotorConfig.Slot0.GravityType = GravityTypeValue.Elevator_Static;
-        kSubSysConstants.kMotorConfig.Slot0.kG = 25;
-        kSubSysConstants.kMotorConfig.Slot0.kS = 0;
+        kSubSysConstants.kMotorConfig.Slot0.kG = 10;
+        kSubSysConstants.kMotorConfig.Slot0.kS = 3;
         kSubSysConstants.kMotorConfig.Slot0.kV = 0;
         kSubSysConstants.kMotorConfig.Slot0.kA = 0;
         kSubSysConstants.kMotorConfig.MotionMagic.MotionMagicCruiseVelocity = 200;

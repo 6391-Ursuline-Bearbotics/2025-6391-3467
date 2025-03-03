@@ -79,14 +79,14 @@ public final class ArmConstants {
         kSubSysConstants.kMotorConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
 
         /* REAL system profile constants */
-        kSubSysConstants.kMotorConfig.Slot0.kP = 150;
-        kSubSysConstants.kMotorConfig.Slot0.kI = 0;
-        kSubSysConstants.kMotorConfig.Slot0.kD = 0;
+        kSubSysConstants.kMotorConfig.Slot0.kP = 180; // 100
+        kSubSysConstants.kMotorConfig.Slot0.kI = 0; // 0
+        kSubSysConstants.kMotorConfig.Slot0.kD = 10; // 10
         kSubSysConstants.kMotorConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
-        kSubSysConstants.kMotorConfig.Slot0.kG = 0;
-        kSubSysConstants.kMotorConfig.Slot0.kS = 24;
-        kSubSysConstants.kMotorConfig.Slot0.kV = 0;
-        kSubSysConstants.kMotorConfig.Slot0.kA = 0;
+        kSubSysConstants.kMotorConfig.Slot0.kG = 10; // 10
+        kSubSysConstants.kMotorConfig.Slot0.kS = 12; // 3
+        kSubSysConstants.kMotorConfig.Slot0.kV = 0; // 0
+        kSubSysConstants.kMotorConfig.Slot0.kA = 0; // 0
         kSubSysConstants.kMotorConfig.MotionMagic.MotionMagicCruiseVelocity = 75;
         kSubSysConstants.kMotorConfig.MotionMagic.MotionMagicAcceleration = 40;
         kSubSysConstants.kMotorConfig.MotionMagic.MotionMagicJerk = 0;

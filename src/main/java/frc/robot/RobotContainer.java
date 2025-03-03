@@ -224,7 +224,7 @@ public class RobotContainer {
     {
         return DriveCommands.joystickDrive(
             m_drive,
-            () -> -m_driver.getLeftY() * speedMultiplier,
+            () -> m_driver.getLeftY() * speedMultiplier,
             () -> -m_driver.getLeftX() * speedMultiplier,
             () -> -m_driver.getRightX());
     }
@@ -233,7 +233,7 @@ public class RobotContainer {
     {
         return DriveCommands.joystickDriveAtAngle(
             m_drive,
-            () -> -m_driver.getLeftY() * speedMultiplier,
+            () -> m_driver.getLeftY() * speedMultiplier,
             () -> -m_driver.getLeftX() * speedMultiplier,
             angle);
     }
@@ -242,7 +242,7 @@ public class RobotContainer {
     {
         return DriveCommands.joystickApproach(
             m_drive,
-            () -> -m_driver.getLeftY() * speedMultiplier,
+            () -> m_driver.getLeftY() * speedMultiplier,
             approachPose);
     }
 
@@ -347,9 +347,13 @@ public class RobotContainer {
 
         // Driver Right Trigger: Place Coral or Algae (Should be done once the robot is in position)
         m_driver.rightTrigger().and(isCoralMode).and(() -> !m_profiledElevator.isL1())
-            .whileTrue(
+            .whileTrue(Commands.parallel(
                 m_clawRoller.setStateCommand(ClawRoller.State.SCORE)
-                    .andThen(m_driver.rumbleForTime(1, 1)))
+                    .andThen(m_driver.rumbleForTime(1, 1)),
+                // backup after shoot
+                DriveCommands.joystickDrive(m_drive, () -> 0.9, () -> 0, () -> 0)
+                    .withTimeout(0.6)
+                    .andThen(DriveCommands.joystickDrive(m_drive, () -> 0, () -> 0, () -> 0))))
             .onFalse(Commands.waitUntil(m_ClawRollerDS.triggered.negate())
                 .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF))
                 .andThen(m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
@@ -389,17 +393,10 @@ public class RobotContainer {
                         Elevator.State.CORAL_INTAKE))
                     .andThen(m_driver.rumbleForTime(1, 1))
                     .andThen(Commands.waitUntil(m_ClawRollerDS.triggered))
-                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL))
-                    .andThen(
-                        m_superStruct
-                            .getTransitionCommand(Arm.State.STOW,
-                                Elevator.State.STOW)))
+                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL)))
             .onFalse(
                 Commands.either(
-                    m_clawRoller.setStateCommand(ClawRoller.State.OFF)
-                        .andThen(m_superStruct
-                            .getTransitionCommand(Arm.State.STOW,
-                                Elevator.State.STOW)),
+                    m_clawRoller.setStateCommand(ClawRoller.State.OFF),
                     Commands
                         .waitUntil(m_IntakeDS.triggered.negate()
                             .and(m_ClawRollerDS.triggered))
