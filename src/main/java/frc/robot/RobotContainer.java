@@ -365,7 +365,7 @@ public class RobotContainer {
             .whileTrue(Commands.parallel(
                 m_clawRoller.setStateCommand(ClawRoller.State.SCORE_L1),
                 // backup after shoot
-                DriveCommands.joystickDrive(m_drive, () -> 0.9, () -> 0, () -> 0)
+                DriveCommands.joystickDrive(m_drive, () -> 0.5, () -> 0, () -> 0)
                     .withTimeout(0.6)
                     .andThen(DriveCommands.joystickDrive(m_drive, () -> 0, () -> 0, () -> 0))))
             .onFalse(Commands.waitUntil(m_ClawRollerDS.triggered.negate())
@@ -376,10 +376,10 @@ public class RobotContainer {
 
         m_driver.rightTrigger().and(isCoralMode).and(() -> m_profiledElevator.isL4())
             .whileTrue(Commands.parallel(
-                m_clawRoller.setStateCommand(ClawRoller.State.SCORE_L1),
+                m_clawRoller.setStateCommand(ClawRoller.State.SCORE_L4),
                 // backup after shoot
                 DriveCommands.joystickDrive(m_drive, () -> 0.9, () -> 0, () -> 0)
-                    .withTimeout(0.6)
+                    .withTimeout(0.8)
                     .andThen(DriveCommands.joystickDrive(m_drive, () -> 0, () -> 0, () -> 0))))
             .onFalse(Commands.waitUntil(m_ClawRollerDS.triggered.negate())
                 .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF))

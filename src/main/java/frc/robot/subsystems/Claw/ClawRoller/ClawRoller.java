@@ -16,11 +16,11 @@ public class ClawRoller
     extends GenericMotionProfiledSubsystem<ClawRoller.State> {
 
     static LoggedTunableNumber shotSpeed =
-        new LoggedTunableNumber("ClawRoller/ShotSpeed", 4.0);
+        new LoggedTunableNumber("ClawRoller/ShotSpeed", 6.0);
     static LoggedTunableNumber shotSpeedL1 =
-        new LoggedTunableNumber("ClawRoller/ShotSpeedL1", 4.0);
+        new LoggedTunableNumber("ClawRoller/ShotSpeedL1", 3.0);
     static LoggedTunableNumber shotSpeedL4 =
-        new LoggedTunableNumber("ClawRoller/ShotSpeedL4", 4.0);
+        new LoggedTunableNumber("ClawRoller/ShotSpeedL4", 6.0);
 
     public final Trigger stalled = new Trigger(() -> super.inputs.torqueCurrentAmps[0] <= -60);
 
