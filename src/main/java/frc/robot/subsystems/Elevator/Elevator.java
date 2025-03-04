@@ -44,7 +44,6 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
         ALGAE_HIGH(new ProfileType.MM_POSITION(() -> 3.406)),
         ALGAE_GROUND(new ProfileType.MM_POSITION(() -> 0.05)),
         ALGAE_SCORE(new ProfileType.MM_POSITION(() -> 0.05)),
-        BARGE(new ProfileType.MM_POSITION(() -> 5.3)),
         TUNING(new ProfileType.MM_POSITION(() -> positionTuning.getAsDouble())),
         CHARACTERIZATION(new ProfileType.CHARACTERIZATION()),
         COAST(new ProfileType.DISABLED_COAST()),
@@ -90,7 +89,6 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
     public boolean isElevated()
     {
         switch (this.getState()) {
-            case LEVEL_1:
             case LEVEL_2:
             case LEVEL_3:
             case LEVEL_4:
@@ -99,7 +97,6 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
             case ALGAE_HIGH:
             case ALGAE_GROUND:
             case ALGAE_SCORE:
-            case BARGE:
                 return true;
 
             default:
@@ -110,6 +107,11 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
     public boolean isL1()
     {
         return this.getState() == Elevator.State.LEVEL_1;
+    }
+
+    public boolean isL4()
+    {
+        return this.getState() == Elevator.State.LEVEL_4;
     }
 
     private Debouncer homedDebouncer = new Debouncer(1, DebounceType.kRising);

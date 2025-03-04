@@ -14,6 +14,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -225,7 +226,7 @@ public class RobotContainer {
         return DriveCommands.joystickDrive(
             m_drive,
             () -> m_driver.getLeftY() * speedMultiplier,
-            () -> -m_driver.getLeftX() * speedMultiplier,
+            () -> m_driver.getLeftX() * speedMultiplier,
             () -> -m_driver.getRightX());
     }
 
@@ -234,7 +235,7 @@ public class RobotContainer {
         return DriveCommands.joystickDriveAtAngle(
             m_drive,
             () -> m_driver.getLeftY() * speedMultiplier,
-            () -> -m_driver.getLeftX() * speedMultiplier,
+            () -> m_driver.getLeftX() * speedMultiplier,
             angle);
     }
 
@@ -346,7 +347,8 @@ public class RobotContainer {
                     .andThen(m_driver.rumbleForTime(1, 1)));
 
         // Driver Right Trigger: Place Coral or Algae (Should be done once the robot is in position)
-        m_driver.rightTrigger().and(isCoralMode).and(() -> !m_profiledElevator.isL1())
+        m_driver.rightTrigger().and(isCoralMode)
+            .and(() -> !(m_profiledElevator.isL1() || m_profiledElevator.isL4()))
             .whileTrue(Commands.parallel(
                 m_clawRoller.setStateCommand(ClawRoller.State.SCORE)
                     .andThen(m_driver.rumbleForTime(1, 1)),
@@ -360,12 +362,30 @@ public class RobotContainer {
                     Elevator.State.STOW)));
 
         m_driver.rightTrigger().and(isCoralMode).and(() -> m_profiledElevator.isL1())
-            .whileTrue(
-                m_clawRoller.setStateCommand(ClawRoller.State.SCORE_L1))
+            .whileTrue(Commands.parallel(
+                m_clawRoller.setStateCommand(ClawRoller.State.SCORE_L1),
+                // backup after shoot
+                DriveCommands.joystickDrive(m_drive, () -> 0.9, () -> 0, () -> 0)
+                    .withTimeout(0.6)
+                    .andThen(DriveCommands.joystickDrive(m_drive, () -> 0, () -> 0, () -> 0))))
             .onFalse(Commands.waitUntil(m_ClawRollerDS.triggered.negate())
                 .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF))
                 // .andThen(Commands.waitSeconds(1))
-                .andThen(m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.STOW)));
+                .andThen(m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
+                    Elevator.State.CORAL_INTAKE)));
+
+        m_driver.rightTrigger().and(isCoralMode).and(() -> m_profiledElevator.isL4())
+            .whileTrue(Commands.parallel(
+                m_clawRoller.setStateCommand(ClawRoller.State.SCORE_L1),
+                // backup after shoot
+                DriveCommands.joystickDrive(m_drive, () -> 0.9, () -> 0, () -> 0)
+                    .withTimeout(0.6)
+                    .andThen(DriveCommands.joystickDrive(m_drive, () -> 0, () -> 0, () -> 0))))
+            .onFalse(Commands.waitUntil(m_ClawRollerDS.triggered.negate())
+                .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF))
+                // .andThen(Commands.waitSeconds(1))
+                .andThen(m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
+                    Elevator.State.CORAL_INTAKE)));
 
         // Driver Left Trigger: Drivetrain drive at coral station angle, prepare the elevator and
         // arm, Get Ready to Intake Coral
@@ -393,6 +413,7 @@ public class RobotContainer {
                         Elevator.State.CORAL_INTAKE))
                     .andThen(m_driver.rumbleForTime(1, 1))
                     .andThen(Commands.waitUntil(m_ClawRollerDS.triggered))
+                    .andThen(Commands.waitSeconds(0.25))
                     .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL)))
             .onFalse(
                 Commands.either(

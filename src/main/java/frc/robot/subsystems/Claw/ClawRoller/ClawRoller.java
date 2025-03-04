@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem.TargetState;
+import frc.robot.util.LoggedTunableNumber;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -14,6 +15,13 @@ import lombok.Setter;
 public class ClawRoller
     extends GenericMotionProfiledSubsystem<ClawRoller.State> {
 
+    static LoggedTunableNumber shotSpeed =
+        new LoggedTunableNumber("ClawRoller/ShotSpeed", 4.0);
+    static LoggedTunableNumber shotSpeedL1 =
+        new LoggedTunableNumber("ClawRoller/ShotSpeedL1", 4.0);
+    static LoggedTunableNumber shotSpeedL4 =
+        new LoggedTunableNumber("ClawRoller/ShotSpeedL4", 4.0);
+
     public final Trigger stalled = new Trigger(() -> super.inputs.torqueCurrentAmps[0] <= -60);
 
     @RequiredArgsConstructor
@@ -22,8 +30,9 @@ public class ClawRoller
         OFF(new ProfileType.OPEN_VOLTAGE(() -> 0.0)),
         INTAKE(new ProfileType.OPEN_VOLTAGE(() -> 1.0)),
         EJECT(new ProfileType.OPEN_VOLTAGE(() -> -4.0)),
-        SCORE(new ProfileType.OPEN_VOLTAGE(() -> 4.0)),
-        SCORE_L1(new ProfileType.OPEN_VOLTAGE(() -> 4.0)),
+        SCORE(new ProfileType.OPEN_VOLTAGE(() -> shotSpeed.get())),
+        SCORE_L1(new ProfileType.OPEN_VOLTAGE(() -> shotSpeedL1.get())),
+        SCORE_L4(new ProfileType.OPEN_VOLTAGE(() -> shotSpeedL4.get())),
         HOLDCORAL(new ProfileType.DISABLED_BRAKE());
 
         private final ProfileType profileType;
