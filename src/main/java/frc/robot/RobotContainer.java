@@ -366,7 +366,7 @@ public class RobotContainer {
                 m_clawRoller.setStateCommand(ClawRoller.State.SCORE_L1),
                 // backup after shoot
                 DriveCommands.joystickDrive(m_drive, () -> 0.5, () -> 0, () -> 0)
-                    .withTimeout(0.6)
+                    .withTimeout(0.9)
                     .andThen(DriveCommands.joystickDrive(m_drive, () -> 0, () -> 0, () -> 0))))
             .onFalse(Commands.waitUntil(m_ClawRollerDS.triggered.negate())
                 .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF))

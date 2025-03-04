@@ -18,7 +18,7 @@ public class ClawRoller
     static LoggedTunableNumber shotSpeed =
         new LoggedTunableNumber("ClawRoller/ShotSpeed", 6.0);
     static LoggedTunableNumber shotSpeedL1 =
-        new LoggedTunableNumber("ClawRoller/ShotSpeedL1", 3.0);
+        new LoggedTunableNumber("ClawRoller/ShotSpeedL1", 3.5);
     static LoggedTunableNumber shotSpeedL4 =
         new LoggedTunableNumber("ClawRoller/ShotSpeedL4", 6.0);
 
