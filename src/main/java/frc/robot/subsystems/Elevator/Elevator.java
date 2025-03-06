@@ -33,12 +33,13 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
     @Getter
     public enum State implements TargetState {
         HOMING(new ProfileType.OPEN_VOLTAGE(() -> homingTuning.getAsDouble())),
-        STOW(new ProfileType.MM_POSITION(() -> BOTTOM)),
         CORAL_INTAKE(new ProfileType.MM_POSITION(() -> BOTTOM)),
-        LEVEL_1(new ProfileType.MM_POSITION(() -> BOTTOM)),
         LEVEL_2(new ProfileType.MM_POSITION(() -> 2.2)),
         LEVEL_3(new ProfileType.MM_POSITION(() -> 5.2)),
         LEVEL_4(new ProfileType.MM_POSITION(() -> 9.30)),
+        LEVEL_1_GAP(new ProfileType.MM_POSITION(() -> BOTTOM + 0.5)),
+        LEVEL_2_GAP(new ProfileType.MM_POSITION(() -> 2.7)),
+        LEVEL_3_GAP(new ProfileType.MM_POSITION(() -> 5.7)),
         CLIMB(new ProfileType.MM_POSITION(() -> 0.05)),
         ALGAE_LOW(new ProfileType.MM_POSITION(() -> 1.903)),
         ALGAE_HIGH(new ProfileType.MM_POSITION(() -> 3.406)),
@@ -54,10 +55,10 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
 
     @Getter
     @Setter
-    private State state = State.STOW;
+    private State state = State.CORAL_INTAKE;
 
     @Getter
-    public final Alert homedAlert = new Alert("NEW HOME SET", Alert.AlertType.kInfo);
+    public final Alert homedAlert = new Alert("NEW ELEVATOR HOME SET", Alert.AlertType.kInfo);
 
     /* For adjusting the Arm's static characterization velocity threshold */
     private static final LoggedTunableNumber staticCharacterizationVelocityThresh =
@@ -66,7 +67,7 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
     /** Constructor */
     public Elevator(ElevatorIO io, boolean isSim)
     {
-        super(State.STOW.profileType, ElevatorConstants.kSubSysConstants, io, isSim);
+        super(State.CORAL_INTAKE.profileType, ElevatorConstants.kSubSysConstants, io, isSim);
         SmartDashboard.putData("Elevator Coast Command", setCoastStateCommand());
         SmartDashboard.putData("Elevator Brake Command", setBrakeStateCommand());
     }
@@ -106,7 +107,7 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
 
     public boolean isL1()
     {
-        return this.getState() == Elevator.State.LEVEL_1;
+        return this.getState() == Elevator.State.CORAL_INTAKE;
     }
 
     public boolean isL4()
@@ -161,7 +162,7 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
                     timer.stop();
                     Logger.recordOutput("Elevator/CharacterizationOutput",
                         state.characterizationOutput);
-                    this.state = State.STOW;
+                    this.state = State.CORAL_INTAKE;
                 });
     }
 

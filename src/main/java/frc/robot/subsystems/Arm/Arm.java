@@ -1,11 +1,17 @@
 package frc.robot.subsystems.Arm;
 
 import org.littletonrobotics.junction.Logger;
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem;
 import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem.TargetState;
 import frc.robot.util.LoggedTunableNumber;
@@ -17,6 +23,8 @@ import lombok.Setter;
 @Getter
 public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
 
+    static LoggedTunableNumber homingTuning =
+        new LoggedTunableNumber("Arm/HomingVoltageSP", 1);
     static LoggedTunableNumber positionTuning =
         new LoggedTunableNumber("Arm/PositionTuningSP", 124.0);
 
@@ -26,7 +34,7 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
     @RequiredArgsConstructor
     @Getter
     public enum State implements TargetState {
-        // HOMING(0.0, 0.0, ProfileType.MM_POSITION),
+        HOMING(new ProfileType.OPEN_VOLTAGE(() -> homingTuning.getAsDouble())),
         STOW(new ProfileType.MM_POSITION(() -> ANGLE)),
         CORAL_INTAKE(new ProfileType.MM_POSITION(() -> -0.62)),
         LEVEL_1(new ProfileType.MM_POSITION(() -> -1.45)), // -1.7
@@ -37,7 +45,7 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
         CLIMB(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(50.4))),
         ALGAE_LOW(new ProfileType.MM_POSITION(() -> .2377)),
         ALGAE_HIGH(new ProfileType.MM_POSITION(() -> .2446)),
-        ALGAE_GROUND(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(-0.90))), // 70.0
+        ALGAE_GROUND(new ProfileType.MM_POSITION(() -> -2.8)),
         TUNING(new ProfileType.MM_POSITION(() -> positionTuning.getAsDouble())),
         CHARACTERIZATION(new ProfileType.CHARACTERIZATION()),
         COAST(new ProfileType.DISABLED_COAST()),
@@ -45,6 +53,9 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
 
         private final ProfileType profileType;
     }
+
+    @Getter
+    public final Alert homedAlert = new Alert("NEW ARM HOME SET", Alert.AlertType.kInfo);
 
     @Getter
     @Setter
@@ -79,9 +90,29 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
         return this.runOnce(() -> this.state = State.BRAKE);
     }
 
+    private Debouncer homedDebouncer = new Debouncer(1, DebounceType.kRising);
+
+    public Trigger homedTrigger =
+        new Trigger(
+            () -> homedDebouncer.calculate(
+                (this.state == State.HOMING && Math.abs(io.getVelocity()) < .01)));
+
+    public Command zeroSensorCommand()
+    {
+        return new InstantCommand(() -> io.zeroSensors());
+    }
+
     public boolean atPosition(double tolerance)
     {
         return io.atPosition(state.profileType, tolerance);
+    }
+
+    public Command homedAlertCommand()
+    {
+        return new SequentialCommandGroup(
+            new InstantCommand(() -> homedAlert.set(true)),
+            Commands.waitSeconds(1),
+            new InstantCommand(() -> homedAlert.set(false)));
     }
 
     public Command staticCharacterization(double outputRampRate)
