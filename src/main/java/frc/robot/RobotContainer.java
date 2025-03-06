@@ -219,8 +219,8 @@ public class RobotContainer {
     {
         return DriveCommands.joystickDrive(
             m_drive,
-            () -> m_driver.getLeftY() * speedMultiplier,
-            () -> m_driver.getLeftX() * speedMultiplier,
+            () -> -m_driver.getLeftY() * speedMultiplier,
+            () -> -m_driver.getLeftX() * speedMultiplier,
             () -> -m_driver.getRightX());
     }
 
@@ -228,8 +228,8 @@ public class RobotContainer {
     {
         return DriveCommands.joystickDriveAtAngle(
             m_drive,
-            () -> m_driver.getLeftY() * speedMultiplier,
-            () -> m_driver.getLeftX() * speedMultiplier,
+            () -> -m_driver.getLeftY() * speedMultiplier,
+            () -> -m_driver.getLeftX() * speedMultiplier,
             angle);
     }
 
@@ -237,7 +237,7 @@ public class RobotContainer {
     {
         return DriveCommands.joystickApproach(
             m_drive,
-            () -> m_driver.getLeftY() * speedMultiplier,
+            () -> -m_driver.getLeftY() * speedMultiplier,
             approachPose);
     }
 
@@ -268,9 +268,12 @@ public class RobotContainer {
 
         // Driver Right Bumper: Approach Nearest Right-Side Reef Branch
         m_driver.rightBumper().and(isCoralMode)
-            .whileTrue(
+            .whileTrue(Commands.either(
                 joystickApproach(
-                    () -> FieldConstants.getNearestReefBranch(m_drive.getPose(), ReefSide.RIGHT)));
+                    () -> FieldConstants.getNearestReefBranch(m_drive.getPose(), ReefSide.RIGHT)),
+                joystickDriveAtAngle(
+                    () -> FieldConstants.getNearestCoralStation(m_drive.getPose()).getRotation()),
+                m_ClawRollerDS.triggered));
 
         // Driver Left Bumper: Approach Nearest Left-Side Reef Branch
         m_driver.leftBumper().and(isCoralMode)
@@ -336,12 +339,12 @@ public class RobotContainer {
         // Driver Right Trigger: Place Coral on L2/L3
         m_driver.rightTrigger().and(isCoralMode)
             .and(() -> !(m_profiledElevator.isL1() || m_profiledElevator.isL4()))
-            .whileTrue(Commands.parallel(
+            .onTrue(Commands.parallel(
                 m_clawRoller.setStateCommand(ClawRoller.State.SCORE)
                     .andThen(Commands.waitUntil(m_ClawRollerDS.triggered.negate()))
                     .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF)),
                 // backup after shoot
-                DriveCommands.joystickDriveRobot(m_drive, () -> 0.9, () -> 0, () -> 0)
+                DriveCommands.joystickDriveRobot(m_drive, () -> -0.2, () -> 0, () -> 0)
                     .withTimeout(0.6)
                     .andThen(Commands.runOnce(() -> m_drive.stop()))
                     .andThen(m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
@@ -349,32 +352,26 @@ public class RobotContainer {
 
         // Place Coral on L1
         m_driver.rightTrigger().and(isCoralMode).and(() -> m_profiledElevator.isL1())
-            .whileTrue(Commands.parallel(
+            .onTrue(
                 m_clawRoller.setStateCommand(ClawRoller.State.SCORE_L1)
                     .andThen(Commands.waitUntil(m_ClawRollerDS.triggered.negate()))
-                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF)),
-                // backup after shoot
-                DriveCommands.joystickDriveRobot(m_drive, () -> 0.5, () -> 0, () -> 0)
-                    .withTimeout(0.9)
-                    .andThen(Commands.runOnce(() -> m_drive.stop()))
-                    .andThen(m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
-                        Elevator.State.CORAL_INTAKE))));
+                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF)));
 
         // Place Coral on L4
         m_driver.rightTrigger().and(isCoralMode).and(() -> m_profiledElevator.isL4())
-            .whileTrue(Commands.parallel(
+            .onTrue(Commands.parallel(
                 m_clawRoller.setStateCommand(ClawRoller.State.SCORE_L4)
                     .andThen(Commands.waitUntil(m_ClawRollerDS.triggered.negate()))
                     .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF)),
                 // backup after shoot
-                DriveCommands.joystickDriveRobot(m_drive, () -> 0.9, () -> 0, () -> 0)
-                    .withTimeout(0.8)
+                DriveCommands.joystickDriveRobot(m_drive, () -> -0.25, () -> 0, () -> 0)
+                    .withTimeout(0.6)
                     .andThen(Commands.runOnce(() -> m_drive.stop()))
                     .andThen(m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
                         Elevator.State.CORAL_INTAKE))));
 
         m_driver.leftTrigger().or(m_operator.leftTrigger()).and(isCoralMode)
-            .whileTrue(
+            .onTrue(
                 m_clawRoller.setStateCommand(ClawRoller.State.INTAKE)
                     .andThen(m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
                         Elevator.State.CORAL_INTAKE))
@@ -453,8 +450,8 @@ public class RobotContainer {
         m_driver.povRight().or(m_operator.povRight())
             .onTrue(setRobotModeCommand(RobotMode.GAP));
 
-        m_operator.leftTrigger().onTrue(m_profiledElevator.setStateCommand(Elevator.State.TUNING));
-        m_operator.rightTrigger().onTrue(m_profiledArm.setStateCommand(Arm.State.TUNING));
+        m_operator.back().onTrue(m_profiledElevator.setStateCommand(Elevator.State.TUNING));
+        m_operator.start().onTrue(m_profiledArm.setStateCommand(Arm.State.TUNING));
     }
 
     /**
@@ -488,7 +485,7 @@ public class RobotContainer {
                 .andThen(
                     m_superStruct.getTransitionCommand(Arm.State.LEVEL_4, Elevator.State.LEVEL_4,
                         0.08,
-                        0.8)));
+                        0.1)));
 
         NamedCommands.registerCommand(
             "L4Prep",
@@ -501,13 +498,13 @@ public class RobotContainer {
         NamedCommands.registerCommand(
             "Home",
             m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.CORAL_INTAKE, 0.1,
-                0.8));
+                0.1));
 
         // Wait for EE sensor to be triggered
         NamedCommands.registerCommand("SuperstructureIntake",
             m_superStruct
                 .getTransitionCommand(Arm.State.CORAL_INTAKE,
-                    Elevator.State.CORAL_INTAKE, 0.1, 0.8)
+                    Elevator.State.CORAL_INTAKE, 0.1, 0.1)
                 .andThen(m_clawRoller.setStateCommand(ClawRoller.State.INTAKE)));
 
         NamedCommands.registerCommand(
@@ -525,7 +522,7 @@ public class RobotContainer {
 
         NamedCommands.registerCommand(
             "Score",
-            m_clawRoller.setStateCommand(ClawRoller.State.SCORE)
+            m_clawRoller.setStateCommand(ClawRoller.State.SCORE_L4)
                 .andThen(Commands.waitUntil(m_ClawRollerDS.triggered.negate()))
                 .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF)));
 

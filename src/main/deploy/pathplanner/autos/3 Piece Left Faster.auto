@@ -36,12 +36,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "WaitForCoral"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "TopSource-K"
@@ -70,12 +64,6 @@
           "type": "path",
           "data": {
             "pathName": "K-TopSource"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "WaitForCoral"
           }
         },
         {
