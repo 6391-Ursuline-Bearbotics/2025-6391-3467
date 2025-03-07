@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.747445804156282,
-        "y": 2.291981097253257
+        "x": 6.356437424276324,
+        "y": 2.098095471841743
       },
       "isLocked": false,
       "linkedName": null
@@ -20,8 +20,8 @@
         "y": 2.767249999999999
       },
       "prevControl": {
-        "x": 5.728198581119717,
-        "y": 2.3999199768077566
+        "x": 6.020862074292348,
+        "y": 2.2747021794278113
       },
       "nextControl": null,
       "isLocked": false,
@@ -34,12 +34,12 @@
   "eventMarkers": [
     {
       "name": "L4",
-      "waypointRelativePos": 0.4,
+      "waypointRelativePos": 0.2508474576271186,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "L4Prep"
+          "name": "L4"
         }
       }
     }

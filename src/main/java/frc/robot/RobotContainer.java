@@ -9,6 +9,8 @@ import java.util.function.Supplier;
 import com.ctre.phoenix.led.CANdle;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.events.EventTrigger;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -189,7 +191,12 @@ public class RobotContainer {
 
         // Set up auto routines
         m_autoChooser =
-            new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+            new LoggedDashboardChooser<>("Auto Choices",
+                AutoBuilder.buildAutoChooser("3 Piece Right"));
+
+        for (String auto : AutoBuilder.getAllAutoNames()) {
+            m_autoChooser.addOption(auto.replace("Right", "Left"), new PathPlannerAuto(auto, true));
+        }
 
         // Set up SysId routines
         m_autoChooser.addOption(
@@ -362,7 +369,8 @@ public class RobotContainer {
             .onTrue(Commands.parallel(
                 m_clawRoller.setStateCommand(ClawRoller.State.SCORE_L4)
                     .andThen(Commands.waitUntil(m_ClawRollerDS.triggered.negate()))
-                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF)),
+                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF))
+                    .withTimeout(1),
                 // backup after shoot
                 DriveCommands.joystickDriveRobot(m_drive, () -> -0.25, () -> 0, () -> 0)
                     .withTimeout(0.6)
@@ -459,80 +467,44 @@ public class RobotContainer {
      */
     private void registerNamedCommands()
     {
-        // Go to the L1 Position
-        NamedCommands.registerCommand(
-            "L1",
-            Commands.waitUntil(m_ClawRollerDS.triggered).andThen(
-                m_superStruct.getTransitionCommand(Arm.State.LEVEL_1, Elevator.State.CORAL_INTAKE,
-                    0.1,
-                    0.8)));
-        // Go to the L2 Position
-        NamedCommands.registerCommand(
-            "L2Prep",
-            Commands.waitUntil(m_ClawRollerDS.triggered).andThen(
-                m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.LEVEL_2, 0.1,
-                    0.8)));
-        // Go to the L3 Position
-        NamedCommands.registerCommand(
-            "L3Prep",
-            Commands.waitUntil(m_ClawRollerDS.triggered).andThen(
-                m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.LEVEL_3, 0.1,
-                    0.8)));
         // Go to the L4 Position
-        NamedCommands.registerCommand(
-            "L4",
+        new EventTrigger("L4").onTrue(
             Commands.waitUntil(m_ClawRollerDS.triggered)
                 .andThen(
                     m_superStruct.getTransitionCommand(Arm.State.LEVEL_4, Elevator.State.LEVEL_4,
-                        0.08,
+                        0.1,
                         0.1)));
 
-        NamedCommands.registerCommand(
-            "L4Prep",
-            Commands.waitUntil(m_ClawRollerDS.triggered)
-                .andThen(
-                    m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.LEVEL_4,
-                        0.1,
-                        0.8)));
         // Go to the Home Position
-        NamedCommands.registerCommand(
-            "Home",
-            m_superStruct.getTransitionCommand(Arm.State.STOW, Elevator.State.CORAL_INTAKE, 0.1,
+        new EventTrigger("Home").onTrue(
+            m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE, Elevator.State.CORAL_INTAKE,
+                0.1,
                 0.1));
 
-        // Wait for EE sensor to be triggered
-        NamedCommands.registerCommand("SuperstructureIntake",
-            m_superStruct
-                .getTransitionCommand(Arm.State.CORAL_INTAKE,
-                    Elevator.State.CORAL_INTAKE, 0.1, 0.1)
-                .andThen(m_clawRoller.setStateCommand(ClawRoller.State.INTAKE)));
-
-        NamedCommands.registerCommand(
-            "WaitForCoral",
-            Commands.waitUntil(m_IntakeDS.triggered));
-
-        // Intake Coral
-        NamedCommands.registerCommand(
-            "IntakeCoral",
+        // Move Elevator and Arm then wait for EE sensor to be triggered
+        NamedCommands.registerCommand("IntakeWait",
             m_clawRoller.setStateCommand(ClawRoller.State.INTAKE)
-                .andThen(
-                    Commands.waitUntil(
-                        m_IntakeDS.triggered.negate().and(m_ClawRollerDS.triggered)))
+                .andThen(m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
+                    Elevator.State.CORAL_INTAKE))
+                .andThen(Commands.waitUntil(m_ClawRollerDS.triggered))
+                .andThen(Commands.waitSeconds(0.25))
                 .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL)));
 
-        NamedCommands.registerCommand(
-            "Score",
+        // Move Elevator and Arm then wait for EE sensor to be triggered
+        new EventTrigger("Intake").onTrue(
+            m_clawRoller.setStateCommand(ClawRoller.State.INTAKE)
+                .andThen(m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
+                    Elevator.State.CORAL_INTAKE))
+                .andThen(Commands.waitUntil(m_ClawRollerDS.triggered))
+                .andThen(Commands.waitSeconds(0.25))
+                .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL)));
+
+        // Score Coral on L4 and shut off when it leaves
+        new EventTrigger("Score").onTrue(
             m_clawRoller.setStateCommand(ClawRoller.State.SCORE_L4)
                 .andThen(Commands.waitUntil(m_ClawRollerDS.triggered.negate()))
-                .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF)));
-
-        NamedCommands.registerCommand("Coast", m_drive.run(() -> {
-        }));
-
-        NamedCommands.registerCommand("HoldCoral",
-            m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL));
-
-        NamedCommands.registerCommand("WaitForEnd", Commands.waitSeconds(14.7));
+                .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF))
+                .withTimeout(1));
     }
 
     /**

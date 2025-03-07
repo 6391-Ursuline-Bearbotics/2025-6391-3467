@@ -11,21 +11,15 @@
           }
         },
         {
-          "type": "named",
+          "type": "wait",
           "data": {
-            "name": "L4"
+            "waitTime": 0.4
           }
         },
         {
           "type": "named",
           "data": {
             "name": "Score"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "SuperstructureIntake"
           }
         },
         {
@@ -35,9 +29,9 @@
           }
         },
         {
-          "type": "named",
+          "type": "wait",
           "data": {
-            "name": "IntakeCoral"
+            "waitTime": 0.0
           }
         },
         {
@@ -47,9 +41,9 @@
           }
         },
         {
-          "type": "named",
+          "type": "wait",
           "data": {
-            "name": "L4"
+            "waitTime": 0.4
           }
         },
         {
@@ -59,21 +53,15 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "SuperstructureIntake"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "D-SourceTop"
           }
         },
         {
-          "type": "named",
+          "type": "wait",
           "data": {
-            "name": "IntakeCoral"
+            "waitTime": 0
           }
         },
         {
@@ -83,9 +71,9 @@
           }
         },
         {
-          "type": "named",
+          "type": "wait",
           "data": {
-            "name": "L4"
+            "waitTime": 0.4
           }
         },
         {

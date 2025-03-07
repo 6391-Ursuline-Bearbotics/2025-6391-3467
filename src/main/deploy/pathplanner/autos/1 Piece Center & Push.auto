@@ -7,13 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Cage-J"
+            "pathName": "Cage-H"
           }
         },
         {
-          "type": "named",
+          "type": "wait",
           "data": {
-            "name": "L4"
+            "waitTime": 1.0
           }
         },
         {
@@ -23,9 +23,9 @@
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "Home"
+            "pathName": "H-PushRight"
           }
         }
       ]

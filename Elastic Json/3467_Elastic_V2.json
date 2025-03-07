@@ -101,32 +101,6 @@
             }
           },
           {
-            "title": "front_left-raw",
-            "x": 300.0,
-            "y": 0.0,
-            "width": 500.0,
-            "height": 300.0,
-            "type": "Camera Stream",
-            "properties": {
-              "topic": "/CameraPublisher/front_left-raw",
-              "period": 0.06,
-              "rotation_turns": 0
-            }
-          },
-          {
-            "title": "front_right-raw",
-            "x": 300.0,
-            "y": 300.0,
-            "width": 500.0,
-            "height": 300.0,
-            "type": "Camera Stream",
-            "properties": {
-              "topic": "/CameraPublisher/front_right-raw",
-              "period": 0.06,
-              "rotation_turns": 0
-            }
-          },
-          {
             "title": "Alerts",
             "x": 0.0,
             "y": 0.0,
@@ -136,6 +110,26 @@
             "properties": {
               "topic": "/AdvantageKit/RealOutputs/Alerts",
               "period": 0.06
+            }
+          },
+          {
+            "title": "Robot Pose Field Map",
+            "x": 300.0,
+            "y": 0.0,
+            "width": 500.0,
+            "height": 600.0,
+            "type": "Field",
+            "properties": {
+              "topic": "/SmartDashboard/Robot Pose Field Map",
+              "period": 0.06,
+              "field_game": "Reefscape",
+              "robot_width": 0.85,
+              "robot_length": 0.85,
+              "show_other_objects": true,
+              "show_trajectories": true,
+              "field_rotation": -90.0,
+              "robot_color": 4294198070,
+              "trajectory_color": 4294967295
             }
           }
         ]
@@ -197,32 +191,6 @@
               "topic": "/SmartDashboard/Auto Choices",
               "period": 0.06,
               "sort_options": false
-            }
-          },
-          {
-            "title": "front_left-processed",
-            "x": 650.0,
-            "y": 150.0,
-            "width": 300.0,
-            "height": 300.0,
-            "type": "Camera Stream",
-            "properties": {
-              "topic": "/CameraPublisher/front_left-processed",
-              "period": 0.06,
-              "rotation_turns": 0
-            }
-          },
-          {
-            "title": "front_right-processed",
-            "x": 950.0,
-            "y": 150.0,
-            "width": 300.0,
-            "height": 300.0,
-            "type": "Camera Stream",
-            "properties": {
-              "topic": "/CameraPublisher/front_right-processed",
-              "period": 0.06,
-              "rotation_turns": 0
             }
           },
           {

@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Home",
-      "waypointRelativePos": 0.1,
+      "name": "Intake",
+      "waypointRelativePos": 0.20205479452054825,
       "endWaypointRelativePos": null,
       "command": {
         "type": "deadline",
@@ -47,7 +47,7 @@
                   {
                     "type": "named",
                     "data": {
-                      "name": "SuperstructureIntake"
+                      "name": "Intake"
                     }
                   }
                 ]
