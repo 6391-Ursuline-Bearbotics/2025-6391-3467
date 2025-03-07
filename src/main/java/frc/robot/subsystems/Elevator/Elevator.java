@@ -34,6 +34,7 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
     public enum State implements TargetState {
         HOMING(new ProfileType.OPEN_VOLTAGE(() -> homingTuning.getAsDouble())),
         CORAL_INTAKE(new ProfileType.MM_POSITION(() -> BOTTOM)),
+        LEVEL_1(new ProfileType.MM_POSITION(() -> BOTTOM + .5)),
         LEVEL_2(new ProfileType.MM_POSITION(() -> 2.2)),
         LEVEL_3(new ProfileType.MM_POSITION(() -> 5.2)),
         LEVEL_4(new ProfileType.MM_POSITION(() -> 9.30)),
@@ -90,6 +91,7 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
     public boolean isElevated()
     {
         switch (this.getState()) {
+            case LEVEL_1:
             case LEVEL_2:
             case LEVEL_3:
             case LEVEL_4:
@@ -107,7 +109,9 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
 
     public boolean isL1()
     {
-        return this.getState() == Elevator.State.CORAL_INTAKE;
+        // return this.getState() == Elevator.State.CORAL_INTAKE;
+        return this.getState() == Elevator.State.LEVEL_1;
+
     }
 
     public boolean isL4()

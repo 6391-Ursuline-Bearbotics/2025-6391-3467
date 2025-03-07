@@ -101,6 +101,7 @@ public class RobotContainer {
     private Trigger isCoralMode = new Trigger(() -> RobotMode.CORAL == robotMode);
 
     private double speedMultiplier = 0.85;
+    private Supplier<Double> speedScalar = () -> speedMultiplier;
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer()
@@ -195,7 +196,10 @@ public class RobotContainer {
                 AutoBuilder.buildAutoChooser("3 Piece Right"));
 
         for (String auto : AutoBuilder.getAllAutoNames()) {
-            m_autoChooser.addOption(auto.replace("Right", "Left"), new PathPlannerAuto(auto, true));
+            if (auto.contains("Right")) {
+                m_autoChooser.addOption(auto.replace("Right", "Left"),
+                    new PathPlannerAuto(auto, true));
+            }
         }
 
         // Set up SysId routines
@@ -226,9 +230,9 @@ public class RobotContainer {
     {
         return DriveCommands.joystickDrive(
             m_drive,
-            () -> -m_driver.getLeftY() * speedMultiplier,
-            () -> -m_driver.getLeftX() * speedMultiplier,
-            () -> -m_driver.getRightX());
+            () -> -m_driver.getLeftY() * speedScalar.get(),
+            () -> -m_driver.getLeftX() * speedScalar.get(),
+            () -> -m_driver.getRightX() * 0.5);
     }
 
     private Command joystickDriveAtAngle(Supplier<Rotation2d> angle)
@@ -297,7 +301,8 @@ public class RobotContainer {
         m_driver.a().or(m_operator.a())
             .and(isCoralMode)
             .onTrue(
-                m_superStruct.getTransitionCommand(Arm.State.LEVEL_1, Elevator.State.CORAL_INTAKE));
+                Commands.runOnce(() -> speedMultiplier = 0.85).andThen(
+                    m_superStruct.getTransitionCommand(Arm.State.LEVEL_1, Elevator.State.LEVEL_1)));
 
         // Driver A Button held and Algae mode: Send Arm and Elevator to Processor
         m_driver.a().or(m_operator.a())
@@ -310,7 +315,8 @@ public class RobotContainer {
         m_driver.x().or(m_operator.x())
             .and(isCoralMode)
             .onTrue(
-                m_superStruct.getTransitionCommand(Arm.State.LEVEL_2, Elevator.State.LEVEL_2));
+                Commands.runOnce(() -> speedMultiplier = 0.85).andThen(
+                    m_superStruct.getTransitionCommand(Arm.State.LEVEL_2, Elevator.State.LEVEL_2)));
 
         // Driver X Button and Algae mode: Send Arm and Elevator to ALGAE_LOW position
         m_driver.x().or(m_operator.x())
@@ -325,7 +331,8 @@ public class RobotContainer {
         m_driver.b().or(m_operator.b())
             .and(isCoralMode)
             .onTrue(
-                m_superStruct.getTransitionCommand(Arm.State.LEVEL_3, Elevator.State.LEVEL_3));
+                Commands.runOnce(() -> speedMultiplier = 0.5).andThen(
+                    m_superStruct.getTransitionCommand(Arm.State.LEVEL_3, Elevator.State.LEVEL_3)));
 
         // Driver B Button and Algae mode: Send Arm and Elevator to ALGAE_HIGH position
         m_driver.b().or(m_operator.b())
@@ -340,8 +347,8 @@ public class RobotContainer {
         m_driver.y().or(m_operator.y())
             .and(isCoralMode)
             .onTrue(
-                m_superStruct.getTransitionCommand(Arm.State.LEVEL_4, Elevator.State.LEVEL_4, 0.0,
-                    0.8));
+                Commands.runOnce(() -> speedMultiplier = 0.5).andThen(
+                    m_superStruct.getTransitionCommand(Arm.State.LEVEL_4, Elevator.State.LEVEL_4)));
 
         // Driver Right Trigger: Place Coral on L2/L3
         m_driver.rightTrigger().and(isCoralMode)
@@ -361,6 +368,8 @@ public class RobotContainer {
         m_driver.rightTrigger().and(isCoralMode).and(() -> m_profiledElevator.isL1())
             .onTrue(
                 m_clawRoller.setStateCommand(ClawRoller.State.SCORE_L1)
+                    .andThen(m_superStruct.getTransitionCommand(Arm.State.LEVEL_1_FLIP,
+                        Elevator.State.LEVEL_1))
                     .andThen(Commands.waitUntil(m_ClawRollerDS.triggered.negate()))
                     .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF)));
 
@@ -375,6 +384,7 @@ public class RobotContainer {
                 DriveCommands.joystickDriveRobot(m_drive, () -> -0.25, () -> 0, () -> 0)
                     .withTimeout(0.6)
                     .andThen(Commands.runOnce(() -> m_drive.stop()))
+                    .andThen(Commands.runOnce(() -> speedMultiplier = 1.0))
                     .andThen(m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
                         Elevator.State.CORAL_INTAKE))));
 
@@ -468,7 +478,7 @@ public class RobotContainer {
     private void registerNamedCommands()
     {
         // Go to the L4 Position
-        new EventTrigger("L4").onTrue(
+        NamedCommands.registerCommand("L4",
             Commands.waitUntil(m_ClawRollerDS.triggered)
                 .andThen(
                     m_superStruct.getTransitionCommand(Arm.State.LEVEL_4, Elevator.State.LEVEL_4,
@@ -476,35 +486,22 @@ public class RobotContainer {
                         0.1)));
 
         // Go to the Home Position
-        new EventTrigger("Home").onTrue(
+        NamedCommands.registerCommand("Home",
             m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE, Elevator.State.CORAL_INTAKE,
                 0.1,
                 0.1));
 
         // Move Elevator and Arm then wait for EE sensor to be triggered
-        NamedCommands.registerCommand("IntakeWait",
+        NamedCommands.registerCommand("Intake",
             m_clawRoller.setStateCommand(ClawRoller.State.INTAKE)
-                .andThen(m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
-                    Elevator.State.CORAL_INTAKE))
-                .andThen(Commands.waitUntil(m_ClawRollerDS.triggered))
-                .andThen(Commands.waitSeconds(0.25))
-                .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL)));
-
-        // Move Elevator and Arm then wait for EE sensor to be triggered
-        new EventTrigger("Intake").onTrue(
-            m_clawRoller.setStateCommand(ClawRoller.State.INTAKE)
-                .andThen(m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
-                    Elevator.State.CORAL_INTAKE))
                 .andThen(Commands.waitUntil(m_ClawRollerDS.triggered))
                 .andThen(Commands.waitSeconds(0.25))
                 .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL)));
 
         // Score Coral on L4 and shut off when it leaves
-        new EventTrigger("Score").onTrue(
-            m_clawRoller.setStateCommand(ClawRoller.State.SCORE_L4)
-                .andThen(Commands.waitUntil(m_ClawRollerDS.triggered.negate()))
-                .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF))
-                .withTimeout(1));
+        NamedCommands.registerCommand("Shoot",
+            Commands.print("Shooting").andThen(
+                m_clawRoller.setStateCommand(ClawRoller.State.SCORE_L4)));
     }
 
     /**

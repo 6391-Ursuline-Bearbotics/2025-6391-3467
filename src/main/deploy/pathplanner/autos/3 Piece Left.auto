@@ -23,7 +23,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Score"
+                  "name": null
                 }
               }
             ]
@@ -48,7 +48,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Score"
+                  "name": null
                 }
               }
             ]
@@ -73,7 +73,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Score"
+                  "name": null
                 }
               }
             ]
@@ -98,7 +98,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Score"
+                  "name": null
                 }
               }
             ]

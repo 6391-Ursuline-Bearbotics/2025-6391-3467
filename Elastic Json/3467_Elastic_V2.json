@@ -204,6 +204,34 @@
               "topic": "/AdvantageKit/RealOutputs/Alerts",
               "period": 0.06
             }
+          },
+          {
+            "title": "batteryPercent",
+            "x": 650.0,
+            "y": 150.0,
+            "width": 150.0,
+            "height": 150.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/questnav/batteryPercent",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "position",
+            "x": 800.0,
+            "y": 150.0,
+            "width": 450.0,
+            "height": 150.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/questnav/position",
+              "period": 0.06,
+              "data_type": "float[]",
+              "show_submit_button": false
+            }
           }
         ]
       }

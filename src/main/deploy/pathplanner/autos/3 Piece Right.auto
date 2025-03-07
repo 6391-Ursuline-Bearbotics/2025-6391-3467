@@ -11,21 +11,27 @@
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 0.4
+            "name": "Shoot"
           }
         },
         {
-          "type": "named",
+          "type": "wait",
           "data": {
-            "name": "Score"
+            "waitTime": 0.3
           }
         },
         {
           "type": "path",
           "data": {
             "pathName": "E-SourceTop"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake"
           }
         },
         {
@@ -41,15 +47,15 @@
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 0.4
+            "name": "Shoot"
           }
         },
         {
-          "type": "named",
+          "type": "wait",
           "data": {
-            "name": "Score"
+            "waitTime": 0.3
           }
         },
         {
@@ -59,9 +65,15 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "Intake"
+          }
+        },
+        {
           "type": "wait",
           "data": {
-            "waitTime": 0
+            "waitTime": 0.0
           }
         },
         {
@@ -71,15 +83,15 @@
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 0.4
+            "name": "Shoot"
           }
         },
         {
-          "type": "named",
+          "type": "wait",
           "data": {
-            "name": "Score"
+            "waitTime": 0.4
           }
         }
       ]
