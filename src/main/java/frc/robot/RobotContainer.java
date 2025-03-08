@@ -10,7 +10,10 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -516,4 +519,21 @@ public class RobotContainer {
             "FieldSimulation/Algae",
             SimulatedArena.getInstance().getGamePiecesArrayByType("Algae"));
     }
+
+    /*
+     * public Command determineOffsetToRobotCenter() { return Commands.repeatingSequence(
+     * Commands.run( () -> { m_drive.drive(new ChassisSpeeds(0, 0, 0.314), null); },
+     * m_drive).withTimeout(0.5), Commands.runOnce(() -> { // Update current offset Translation2d
+     * offset = calculateOffsetToRobotCenter();
+     * 
+     * _calculatedOffsetToRobotCenter = _calculatedOffsetToRobotCenter .times((double)
+     * _calculatedOffsetToRobotCenterCount / (_calculatedOffsetToRobotCenterCount + 1))
+     * .plus(offset.div(_calculatedOffsetToRobotCenterCount + 1));
+     * _calculatedOffsetToRobotCenterCount++;
+     * 
+     * SmartDashboard.putNumberArray("Quest Calculated Offset to Robot Center", new double[]
+     * {_calculatedOffsetToRobotCenter.getX(), _calculatedOffsetToRobotCenter.getY()});
+     * 
+     * }).onlyIf(() -> getRotation().getMeasureZ().in(Degrees) > 30)); }
+     */
 }
