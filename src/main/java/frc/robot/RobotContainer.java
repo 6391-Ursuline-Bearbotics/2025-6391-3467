@@ -101,6 +101,8 @@ public class RobotContainer {
     {
         switch (Constants.currentMode) {
             case REAL:
+                m_vision = new Vision(new VisionIOQuestNav(VisionConstants.questName));
+
                 // Real robot, instantiate hardware IO implementations
                 m_drive =
                     new Drive(
@@ -109,17 +111,15 @@ public class RobotContainer {
                         new ModuleIOTalonFXReal(TunerConstants.FrontRight),
                         new ModuleIOTalonFXReal(TunerConstants.BackLeft),
                         new ModuleIOTalonFXReal(TunerConstants.BackRight),
-                        (robotPose) -> {
-                        });
+                        m_vision::zeroQuest);
 
+                m_vision.updateConsumer(m_drive);
                 m_profiledArm = new Arm(new ArmIOTalonFX(), false);
                 m_profiledElevator = new Elevator(new ElevatorIOTalonFX(), false);
                 m_profiledClimber = new Climber(new ClimberIOTalonFX(), false);
                 m_clawRoller = new ClawRoller(new ClawRollerIOTalonFX(), false);
                 m_ClawRollerDS = new ClawRollerDS(new ClawRollerDSIOReal());
                 m_IntakeDS = new IntakeDS(new IntakeDSIOReal());
-
-                m_vision = new Vision(m_drive);
 
                 break;
 
@@ -150,7 +150,8 @@ public class RobotContainer {
                 m_ClawRollerDS = new ClawRollerDS(new ClawRollerDSIOSim());
                 m_IntakeDS = new IntakeDS(new IntakeDSIOSim());
 
-                m_vision = new Vision(m_drive);
+                m_vision = new Vision();
+                m_vision.updateConsumer(m_drive);
 
                 break;
 
@@ -173,7 +174,8 @@ public class RobotContainer {
                 m_ClawRollerDS = new ClawRollerDS(new ClawRollerDSIO() {});
                 m_IntakeDS = new IntakeDS(new IntakeDSIO() {});
 
-                m_vision = new Vision(m_drive);
+                m_vision = new Vision();
+                m_vision.updateConsumer(m_drive);
                 break;
         }
 

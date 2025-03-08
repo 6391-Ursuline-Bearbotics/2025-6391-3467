@@ -30,16 +30,15 @@ import java.util.List;
 import org.littletonrobotics.junction.Logger;
 
 public class Vision extends SubsystemBase {
-    private final VisionConsumer consumer;
+    private VisionConsumer consumer;
     private final VisionIO[] io;
     private final VisionIOInputsAutoLogged[] inputs;
     private final Alert[] disconnectedAlerts;
     public boolean visionHasTarget = false;
     private boolean seesThisTarget = false;
 
-    public Vision(VisionConsumer consumer, VisionIO... io)
+    public Vision(VisionIO... io)
     {
-        this.consumer = consumer;
         this.io = io;
 
         // Initialize inputs
@@ -207,5 +206,10 @@ public class Vision extends SubsystemBase {
             Pose2d visionRobotPoseMeters,
             double timestampSeconds,
             Matrix<N3, N1> visionMeasurementStdDevs);
+    }
+
+    public void updateConsumer(VisionConsumer consumer)
+    {
+        this.consumer = consumer;
     }
 }
