@@ -359,8 +359,8 @@ public class RobotContainer {
                     .andThen(Commands.waitUntil(m_ClawRollerDS.triggered.negate()))
                     .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF)),
                 // backup after shoot
-                DriveCommands.joystickDriveRobot(m_drive, () -> -0.2, () -> 0, () -> 0)
-                    .withTimeout(0.3)
+                DriveCommands.joystickDriveRobot(m_drive, () -> -0.15, () -> 0, () -> 0)
+                    .withTimeout(0.4)
                     .andThen(Commands.runOnce(() -> m_drive.stop()))
                     .andThen(m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
                         Elevator.State.CORAL_INTAKE))));
@@ -384,8 +384,8 @@ public class RobotContainer {
                         .withTimeout(1))
                     // backup after shoot
                     .andThen(
-                        DriveCommands.joystickDriveRobot(m_drive, () -> -0.20, () -> 0, () -> 0)
-                            .withTimeout(0.3))
+                        DriveCommands.joystickDriveRobot(m_drive, () -> -0.15, () -> 0, () -> 0)
+                            .withTimeout(0.5))
                     .andThen(Commands.runOnce(() -> m_drive.stop()))
                     .andThen(Commands.runOnce(() -> speedMultiplier = 1.0))
                     .andThen(m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
