@@ -360,7 +360,7 @@ public class RobotContainer {
                     .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF)),
                 // backup after shoot
                 DriveCommands.joystickDriveRobot(m_drive, () -> -0.2, () -> 0, () -> 0)
-                    .withTimeout(0.6)
+                    .withTimeout(0.3)
                     .andThen(Commands.runOnce(() -> m_drive.stop()))
                     .andThen(m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
                         Elevator.State.CORAL_INTAKE))));
@@ -376,18 +376,20 @@ public class RobotContainer {
 
         // Place Coral on L4
         m_driver.rightTrigger().and(isCoralMode).and(() -> m_profiledElevator.isL4())
-            .onTrue(Commands.parallel(
+            .onTrue(
                 m_clawRoller.setStateCommand(ClawRoller.State.SCORE_L4)
-                    .andThen(Commands.waitUntil(m_ClawRollerDS.triggered.negate()))
-                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF))
-                    .withTimeout(1),
-                // backup after shoot
-                DriveCommands.joystickDriveRobot(m_drive, () -> -0.25, () -> 0, () -> 0)
-                    .withTimeout(0.6)
+                    .andThen(m_profiledArm.setStateCommand(Arm.State.LEVEL_4_BACK))
+                    .andThen(Commands.waitUntil(m_ClawRollerDS.triggered.negate())
+                        .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF))
+                        .withTimeout(1))
+                    // backup after shoot
+                    .andThen(
+                        DriveCommands.joystickDriveRobot(m_drive, () -> -0.20, () -> 0, () -> 0)
+                            .withTimeout(0.3))
                     .andThen(Commands.runOnce(() -> m_drive.stop()))
                     .andThen(Commands.runOnce(() -> speedMultiplier = 1.0))
                     .andThen(m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
-                        Elevator.State.CORAL_INTAKE))));
+                        Elevator.State.CORAL_INTAKE)));
 
         m_driver.leftTrigger().or(m_operator.leftTrigger()).and(isCoralMode)
             .onTrue(
@@ -411,7 +413,7 @@ public class RobotContainer {
                 m_profiledElevator.setStateCommand(Elevator.State.CORAL_INTAKE)));
 
         // Driver or Operator POV Down: Zero the Arm (HOMING)
-        m_driver.back().or(m_operator.back()).whileTrue(
+        m_driver.back().whileTrue(
             Commands.sequence(
                 // Move Arm to CORAL_INTAKE position before homing
                 m_profiledArm.setStateCommand(Arm.State.CORAL_INTAKE),
@@ -471,8 +473,8 @@ public class RobotContainer {
 
         // Score Coral on L4 and shut off when it leaves
         NamedCommands.registerCommand("Shoot",
-            Commands.print("Shooting").andThen(
-                m_clawRoller.setStateCommand(ClawRoller.State.SCORE_L4)));
+            m_clawRoller.setStateCommand(ClawRoller.State.SCORE_L4)
+                .andThen(m_profiledArm.setStateCommand(Arm.State.LEVEL_4_BACK)));
     }
 
     /**
