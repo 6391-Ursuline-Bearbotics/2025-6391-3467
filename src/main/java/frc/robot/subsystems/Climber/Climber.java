@@ -26,11 +26,9 @@ public class Climber extends GenericMotionProfiledSubsystem<Climber.State> {
     @RequiredArgsConstructor
     @Getter
     public enum State implements TargetState {
-        // HOME is climber upright, Prep - Assuming that PREP position is parallel to the x axis,
-        // CLIMB is inwards
-        HOME(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(90.0))),
-        PREP(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(0.0))),
-        CLIMB(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(110.0))),
+        HOME(new ProfileType.DISABLED_BRAKE()),
+        UNCLIMB(new ProfileType.OPEN_VOLTAGE(() -> -6.0)),
+        CLIMB(new ProfileType.OPEN_VOLTAGE(() -> 6.0)),
         TUNING(new ProfileType.MM_POSITION(
             () -> Units.degreesToRotations(positionTuning.getAsDouble())));
 
@@ -54,25 +52,6 @@ public class Climber extends GenericMotionProfiledSubsystem<Climber.State> {
     {
         return startEnd(() -> this.state = state, () -> this.state = State.HOME);
     }
-
-    // Climbing Triggers
-    public boolean climbRequested = false; // Whether or not a climb request is active
-    private Trigger climbRequest = new Trigger(() -> climbRequested); // Trigger for climb request
-    public int climbStep = 0; // Tracking what step in the climb sequence we are on, is at zero when
-                              // not climbing
-
-    // Triggers for each step of the climb sequence
-    private Trigger climbStep1 = new Trigger(() -> climbStep == 1);
-    private Trigger climbStep2 = new Trigger(() -> climbStep == 2);
-
-    // Debouncer and trigger checks to see if the climber has finished climbing
-    private Debouncer climbedDebouncer = new Debouncer(.25, DebounceType.kRising);
-
-    public Trigger climbedTrigger =
-        new Trigger(
-            () -> climbedDebouncer.calculate(
-                this.state == State.CLIMB
-                    && (Math.abs(io.getSupplyCurrent()) > ClimberConstants.kSupplyCurrentLimit)));
 
     public Command climbedAlertCommand()
     {

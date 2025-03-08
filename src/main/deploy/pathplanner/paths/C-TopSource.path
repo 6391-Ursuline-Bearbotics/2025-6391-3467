@@ -34,7 +34,7 @@
   "eventMarkers": [
     {
       "name": "Home",
-      "waypointRelativePos": 0.1,
+      "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": {
         "type": "deadline",
@@ -43,7 +43,7 @@
             {
               "type": "named",
               "data": {
-                "name": null
+                "name": "Home"
               }
             }
           ]

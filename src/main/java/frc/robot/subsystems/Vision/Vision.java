@@ -68,6 +68,18 @@ public class Vision extends SubsystemBase {
         return inputs[cameraIndex].latestTargetObservation.tx();
     }
 
+    /**
+     * Zeros the Quest.
+     *
+     * @param startingPose The auto starting pose.
+     */
+    public void zeroQuest(Pose2d startingPose)
+    {
+        for (int i = 0; i < io.length; i++) {
+            io[i].zeroQuest(startingPose);
+        }
+    }
+
     @Override
     public void periodic()
     {

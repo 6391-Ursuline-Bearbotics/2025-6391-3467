@@ -18,8 +18,6 @@ public final class ClimberConstants {
     public static final GenericMotionProfiledSubsystemConstants kSubSysConstants =
         new GenericMotionProfiledSubsystemConstants();
 
-    public static final double kSupplyCurrentLimit = 75.0;
-
     static {
         kSubSysConstants.kName = "Climber";
 

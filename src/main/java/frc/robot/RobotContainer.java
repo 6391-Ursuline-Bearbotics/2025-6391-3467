@@ -4,23 +4,17 @@
 
 package frc.robot;
 
-import static frc.robot.subsystems.Vision.VisionConstants.*;
 import java.util.function.Supplier;
-import com.ctre.phoenix.led.CANdle;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.events.EventTrigger;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.Constants.RobotType;
 import frc.robot.FieldConstants.ReefSide;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
@@ -41,11 +35,10 @@ import frc.robot.subsystems.Claw.IntakeDS.IntakeDSIOSim;
 import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.Climber.ClimberIO;
 import frc.robot.subsystems.Climber.ClimberIOSim;
+import frc.robot.subsystems.Climber.ClimberIOTalonFX;
 import frc.robot.subsystems.Elevator.*;
-import frc.robot.subsystems.GenericMotionProfiledSubsystem.GenericMotionProfiledSubsystem.ProfileType;
 import frc.robot.subsystems.Vision.*;
 import frc.robot.subsystems.drive.*;
-import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.WindupXboxController;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -77,7 +70,7 @@ public class RobotContainer {
     public final Drive m_drive;
     private final Arm m_profiledArm;
     private final Elevator m_profiledElevator;
-    // private final Climber m_profiledClimber;
+    private final Climber m_profiledClimber;
     private final ClawRoller m_clawRoller;
     private final ClawRollerDS m_ClawRollerDS;
     public final IntakeDS m_IntakeDS;
@@ -121,7 +114,7 @@ public class RobotContainer {
 
                 m_profiledArm = new Arm(new ArmIOTalonFX(), false);
                 m_profiledElevator = new Elevator(new ElevatorIOTalonFX(), false);
-                // m_profiledClimber = new Climber(new ClimberIOTalonFX(), false);
+                m_profiledClimber = new Climber(new ClimberIOTalonFX(), false);
                 m_clawRoller = new ClawRoller(new ClawRollerIOTalonFX(), false);
                 m_ClawRollerDS = new ClawRollerDS(new ClawRollerDSIOReal());
                 m_IntakeDS = new IntakeDS(new IntakeDSIOReal());
@@ -152,7 +145,7 @@ public class RobotContainer {
 
                 m_profiledArm = new Arm(new ArmIOSim(), true);
                 m_profiledElevator = new Elevator(new ElevatorIOSim(), true);
-                // m_profiledClimber = new Climber(new ClimberIOSim(), true);
+                m_profiledClimber = new Climber(new ClimberIOSim(), true);
                 m_clawRoller = new ClawRoller(new ClawRollerIOSim(), true);
                 m_ClawRollerDS = new ClawRollerDS(new ClawRollerDSIOSim());
                 m_IntakeDS = new IntakeDS(new IntakeDSIOSim());
@@ -175,7 +168,7 @@ public class RobotContainer {
 
                 m_profiledArm = new Arm(new ArmIO() {}, true);
                 m_profiledElevator = new Elevator(new ElevatorIO() {}, true);
-                // m_profiledClimber = new Climber(new ClimberIO() {}, true);
+                m_profiledClimber = new Climber(new ClimberIO() {}, true);
                 m_clawRoller = new ClawRoller(new ClawRollerIO() {}, true);
                 m_ClawRollerDS = new ClawRollerDS(new ClawRollerDSIO() {});
                 m_IntakeDS = new IntakeDS(new IntakeDSIO() {});
@@ -288,9 +281,12 @@ public class RobotContainer {
 
         // Driver Left Bumper: Approach Nearest Left-Side Reef Branch
         m_driver.leftBumper().and(isCoralMode)
-            .whileTrue(
+            .whileTrue(Commands.either(
                 joystickApproach(
-                    () -> FieldConstants.getNearestReefBranch(m_drive.getPose(), ReefSide.LEFT)));
+                    () -> FieldConstants.getNearestReefBranch(m_drive.getPose(), ReefSide.LEFT)),
+                joystickDriveAtAngle(
+                    () -> FieldConstants.getNearestCoralStation(m_drive.getPose()).getRotation()),
+                m_ClawRollerDS.triggered));
 
         // Driver Left Bumper and Algae mode: Approach Nearest Reef Face
         m_driver.rightBumper().and(isCoralMode.negate())
@@ -397,42 +393,6 @@ public class RobotContainer {
                     .andThen(Commands.waitSeconds(0.25))
                     .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL)));
 
-        // Driver Start Button: Climb Request (toggle)
-        // m_driver.start().onTrue(Commands.runOnce(() -> {
-        // m_profiledClimber.climbRequested = true;
-        // m_profiledClimber.climbStep += 1;
-        // }));
-
-        // Climb step 1: Get the Arm Down, then the Elevator down, and then and move climber to prep
-        // m_profiledClimber.getClimbRequest().and(m_profiledClimber.getClimbStep1()).whileTrue(
-        // Commands.parallel(
-        // Commands.parallel(
-        // m_profiledArm.setStateCommand(Arm.State.CLIMB),
-        // Commands.waitUntil(() -> m_profiledArm.atPosition(0.1))
-        // .andThen(m_profiledElevator.setStateCommand(Elevator.State.STOW))),
-        // Commands
-        // .waitUntil(
-        // () -> m_profiledElevator.atPosition(0.1) && m_profiledArm.atPosition(0.1)))
-        // .andThen(m_profiledClimber.setStateCommand(Climber.State.PREP)));
-
-        // Climb step 2: Move climber to climb
-        // m_profiledClimber.getClimbRequest().and(m_profiledClimber.getClimbStep2())
-        // .whileTrue(
-        // m_profiledClimber.setStateCommand(Climber.State.CLIMB)
-        // .until(m_profiledClimber.getClimbedTrigger()));
-
-        // m_profiledClimber.getClimbedTrigger().onTrue(m_profiledClimber.climbedAlertCommand());
-
-        // Driver POV Right: End Climbing Sequence if needed
-        // m_driver
-        // .povRight()
-        // .onTrue(
-        // Commands.runOnce(
-        // () -> {
-        // m_profiledClimber.climbRequested = false;
-        // m_profiledClimber.climbStep = 0;
-        // }));
-
         // Driver or Operator POV Down: Zero the Elevator (HOMING)
         m_driver.povDown().or(m_operator.povDown()).whileTrue(
             Commands.sequence(
@@ -468,8 +428,14 @@ public class RobotContainer {
         m_driver.povRight().or(m_operator.povRight())
             .onTrue(setRobotModeCommand(RobotMode.GAP));
 
-        m_operator.back().onTrue(m_profiledElevator.setStateCommand(Elevator.State.TUNING));
-        m_operator.start().onTrue(m_profiledArm.setStateCommand(Arm.State.TUNING));
+        m_operator.start().whileTrue(m_profiledClimber.setStateCommand(Climber.State.CLIMB))
+            .onFalse(m_profiledClimber.setStateCommand(Climber.State.HOME));
+
+        m_operator.back().whileTrue(m_profiledClimber.setStateCommand(Climber.State.UNCLIMB))
+            .onFalse(m_profiledClimber.setStateCommand(Climber.State.HOME));
+
+        m_operator.rightTrigger().onTrue(m_profiledElevator.setStateCommand(Elevator.State.TUNING));
+        m_operator.leftBumper().onTrue(m_profiledArm.setStateCommand(Arm.State.TUNING));
     }
 
     /**
