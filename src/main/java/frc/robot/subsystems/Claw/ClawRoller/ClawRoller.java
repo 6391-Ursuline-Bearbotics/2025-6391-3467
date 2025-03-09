@@ -21,15 +21,16 @@ public class ClawRoller
         new LoggedTunableNumber("ClawRoller/ShotSpeedL1", 4.0);
     static LoggedTunableNumber shotSpeedL4 =
         new LoggedTunableNumber("ClawRoller/ShotSpeedL4", 2.2);
+    static LoggedTunableNumber shotSpeedAlgae =
+        new LoggedTunableNumber("ClawRoller/ShotSpeedAlgae", -4.0);
 
     public final Trigger stalled = new Trigger(() -> super.inputs.torqueCurrentAmps[0] <= -60);
 
     @RequiredArgsConstructor
     @Getter
     public enum State implements TargetState {
-        OFF(new ProfileType.OPEN_VOLTAGE(() -> 0.0)),
         INTAKE(new ProfileType.OPEN_VOLTAGE(() -> 1.0)),
-        EJECT(new ProfileType.OPEN_VOLTAGE(() -> -4.0)),
+        EJECT(new ProfileType.OPEN_VOLTAGE(() -> shotSpeedAlgae.get())),
         SCORE(new ProfileType.OPEN_VOLTAGE(() -> shotSpeed.get())),
         SCORE_L1(new ProfileType.OPEN_VOLTAGE(() -> shotSpeedL1.get())),
         SCORE_L4(new ProfileType.OPEN_VOLTAGE(() -> shotSpeedL4.get())),
@@ -39,12 +40,12 @@ public class ClawRoller
     }
 
     @Getter
-    private State state = State.OFF;
+    private State state = State.HOLDCORAL;
 
     /** Constructor */
     public ClawRoller(ClawRollerIO io, boolean isSim)
     {
-        super(State.OFF.profileType, ClawRollerConstants.kSubSysConstants, io, isSim);
+        super(State.HOLDCORAL.profileType, ClawRollerConstants.kSubSysConstants, io, isSim);
     }
 
     public Command setStateCommand(State state)
@@ -55,5 +56,10 @@ public class ClawRoller
     public boolean atPosition(double tolerance)
     {
         return io.atPosition(state.profileType, tolerance);
+    }
+
+    public boolean notIntaking()
+    {
+        return state != State.INTAKE;
     }
 }

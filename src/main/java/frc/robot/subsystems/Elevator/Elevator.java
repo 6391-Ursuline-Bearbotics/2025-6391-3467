@@ -41,11 +41,8 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
         LEVEL_1_GAP(new ProfileType.MM_POSITION(() -> BOTTOM + 0.5)),
         LEVEL_2_GAP(new ProfileType.MM_POSITION(() -> 2.7)),
         LEVEL_3_GAP(new ProfileType.MM_POSITION(() -> 5.7)),
-        CLIMB(new ProfileType.MM_POSITION(() -> 0.05)),
         ALGAE_LOW(new ProfileType.MM_POSITION(() -> 1.903)),
         ALGAE_HIGH(new ProfileType.MM_POSITION(() -> 3.406)),
-        ALGAE_GROUND(new ProfileType.MM_POSITION(() -> 0.05)),
-        ALGAE_SCORE(new ProfileType.MM_POSITION(() -> 0.05)),
         TUNING(new ProfileType.MM_POSITION(() -> positionTuning.getAsDouble())),
         CHARACTERIZATION(new ProfileType.CHARACTERIZATION()),
         COAST(new ProfileType.DISABLED_COAST()),
@@ -95,11 +92,8 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
             case LEVEL_2:
             case LEVEL_3:
             case LEVEL_4:
-            case CLIMB:
             case ALGAE_LOW:
             case ALGAE_HIGH:
-            case ALGAE_GROUND:
-            case ALGAE_SCORE:
                 return true;
 
             default:
@@ -110,13 +104,33 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
     public boolean isL1()
     {
         // return this.getState() == Elevator.State.CORAL_INTAKE;
-        return this.getState() == Elevator.State.LEVEL_1;
+        return this.getState() == Elevator.State.LEVEL_1
+            || this.getState() == Elevator.State.LEVEL_1_GAP;
 
+    }
+
+    public boolean isL2()
+    {
+        return this.getState() == Elevator.State.LEVEL_2
+            || this.getState() == Elevator.State.LEVEL_2_GAP;
+    }
+
+    public boolean isL3()
+    {
+        return this.getState() == Elevator.State.LEVEL_3
+            || this.getState() == Elevator.State.LEVEL_3_GAP;
     }
 
     public boolean isL4()
     {
         return this.getState() == Elevator.State.LEVEL_4;
+    }
+
+    public boolean isOther()
+    {
+        return this.getState() == Elevator.State.CORAL_INTAKE
+            || this.getState() == Elevator.State.ALGAE_HIGH
+            || this.getState() == Elevator.State.ALGAE_LOW;
     }
 
     private Debouncer homedDebouncer = new Debouncer(1, DebounceType.kRising);

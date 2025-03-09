@@ -3,7 +3,6 @@ package frc.robot.subsystems.Arm;
 import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -24,9 +23,9 @@ import lombok.Setter;
 public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
 
     static LoggedTunableNumber homingTuning =
-        new LoggedTunableNumber("Arm/HomingVoltageSP", 1);
+        new LoggedTunableNumber("Arm/HomingVoltageSP", 2);
     static LoggedTunableNumber positionTuning =
-        new LoggedTunableNumber("Arm/PositionTuningSP", 124.0);
+        new LoggedTunableNumber("Arm/PositionTuningSP", -1.0);
 
     // .14 rot is the max extension
     private static final double ANGLE = -2.48;
@@ -44,10 +43,9 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
         LEVEL_4(new ProfileType.MM_POSITION(() -> -2.3)), // ANGLE 2.3
         LEVEL_4_BACK(new ProfileType.MM_POSITION(() -> -.62)), // ANGLE 2.3
         DUNK(new ProfileType.MM_POSITION(() -> -1.403)),
-        CLIMB(new ProfileType.MM_POSITION(() -> Units.degreesToRotations(50.4))),
-        ALGAE_LOW(new ProfileType.MM_POSITION(() -> .2377)),
-        ALGAE_HIGH(new ProfileType.MM_POSITION(() -> .2446)),
-        ALGAE_GROUND(new ProfileType.MM_POSITION(() -> -2.8)),
+        CLIMB(new ProfileType.MM_POSITION(() -> -4.0)),
+        ALGAE_LOW(new ProfileType.MM_POSITION(() -> -2.8)),
+        ALGAE_HIGH(new ProfileType.MM_POSITION(() -> -2.8)),
         TUNING(new ProfileType.MM_POSITION(() -> positionTuning.getAsDouble())),
         CHARACTERIZATION(new ProfileType.CHARACTERIZATION()),
         COAST(new ProfileType.DISABLED_COAST()),

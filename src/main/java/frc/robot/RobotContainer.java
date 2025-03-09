@@ -93,8 +93,10 @@ public class RobotContainer {
     @Setter
     private RobotMode robotMode = RobotMode.CORAL;
 
-    // Trigger for algae/coral mode switching
+    // Triggers for mode switching
     private Trigger isCoralMode = new Trigger(() -> RobotMode.CORAL == robotMode);
+    private Trigger isGapMode = new Trigger(() -> RobotMode.GAP == robotMode);
+    private Trigger isAlgaeMode = new Trigger(() -> RobotMode.ALGAE == robotMode);
 
     private double speedMultiplier = 0.85;
     private Supplier<Double> speedScalar = () -> speedMultiplier;
@@ -293,71 +295,66 @@ public class RobotContainer {
                     () -> FieldConstants.getNearestCoralStation(m_drive.getPose()).getRotation()),
                 m_ClawRollerDS.triggered));
 
-        // Driver Left Bumper and Algae mode: Approach Nearest Reef Face
-        m_driver.rightBumper().and(isCoralMode.negate())
+        // Driver Right Bumper and Algae mode: Approach Nearest Reef Face
+        m_driver.rightBumper().and(isAlgaeMode)
             .whileTrue(
                 joystickApproach(() -> FieldConstants.getNearestReefFace(m_drive.getPose())));
 
         // Driver A Button: Send Arm and Elevator to LEVEL_1
         m_driver.a().or(m_operator.a())
-            .and(isCoralMode)
+            .and(isCoralMode).and(() -> m_clawRoller.notIntaking())
             .onTrue(
                 Commands.runOnce(() -> speedMultiplier = 0.85).andThen(
                     m_superStruct.getTransitionCommand(Arm.State.LEVEL_1, Elevator.State.LEVEL_1)));
 
-        // Driver A Button held and Algae mode: Send Arm and Elevator to Processor
-        m_driver.a().or(m_operator.a())
-            .and(isCoralMode.negate())
-            .onTrue(
-                m_superStruct.getTransitionCommand(Arm.State.ALGAE_GROUND,
-                    Elevator.State.ALGAE_SCORE));
-
         // Driver X Button: Send Arm and Elevator to LEVEL_2
         m_driver.x().or(m_operator.x())
-            .and(isCoralMode)
+            .and(isCoralMode).and(() -> m_clawRoller.notIntaking())
             .onTrue(
                 Commands.runOnce(() -> speedMultiplier = 0.85).andThen(
                     m_superStruct.getTransitionCommand(Arm.State.LEVEL_2, Elevator.State.LEVEL_2)));
 
         // Driver X Button and Algae mode: Send Arm and Elevator to ALGAE_LOW position
         m_driver.x().or(m_operator.x())
-            .and(isCoralMode.negate())
+            .and(isAlgaeMode)
             .onTrue(Commands.parallel(
                 m_superStruct.getTransitionCommand(Arm.State.ALGAE_LOW,
                     Elevator.State.ALGAE_LOW),
-                m_clawRoller.setStateCommand(ClawRoller.State.EJECT)
-                    .finallyDo(() -> m_clawRoller.setStateCommand(ClawRoller.State.OFF))));
+                m_clawRoller.setStateCommand(ClawRoller.State.EJECT)));
 
         // Driver B Button: Send Arm and Elevator to LEVEL_3
         m_driver.b().or(m_operator.b())
-            .and(isCoralMode)
+            .and(isCoralMode).and(() -> m_clawRoller.notIntaking())
             .onTrue(
                 Commands.runOnce(() -> speedMultiplier = 0.5).andThen(
                     m_superStruct.getTransitionCommand(Arm.State.LEVEL_3, Elevator.State.LEVEL_3)));
 
         // Driver B Button and Algae mode: Send Arm and Elevator to ALGAE_HIGH position
         m_driver.b().or(m_operator.b())
-            .and(isCoralMode.negate())
+            .and(isAlgaeMode)
             .onTrue(Commands.parallel(
                 m_superStruct.getTransitionCommand(Arm.State.ALGAE_HIGH,
                     Elevator.State.ALGAE_HIGH),
-                m_clawRoller.setStateCommand(ClawRoller.State.EJECT)
-                    .finallyDo(() -> m_clawRoller.setStateCommand(ClawRoller.State.OFF))));
+                m_clawRoller.setStateCommand(ClawRoller.State.EJECT)));
 
         // Driver Y Button: Send Arm and Elevator to LEVEL_4
         m_driver.y().or(m_operator.y())
-            .and(isCoralMode)
+            .and(isCoralMode).and(() -> m_clawRoller.notIntaking())
             .onTrue(
                 Commands.runOnce(() -> speedMultiplier = 0.5).andThen(
                     m_superStruct.getTransitionCommand(Arm.State.LEVEL_4, Elevator.State.LEVEL_4)));
 
+        // Driver Right Trigger: Any other level
+        m_driver.rightTrigger().and(isCoralMode).and(() -> m_profiledElevator.isOther())
+            .onTrue(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL));
+
         // Driver Right Trigger: Place Coral on L2/L3
         m_driver.rightTrigger().and(isCoralMode)
-            .and(() -> !(m_profiledElevator.isL1() || m_profiledElevator.isL4()))
+            .and(() -> m_profiledElevator.isL2() || m_profiledElevator.isL3())
             .onTrue(Commands.parallel(
                 m_clawRoller.setStateCommand(ClawRoller.State.SCORE)
                     .andThen(Commands.waitUntil(m_ClawRollerDS.triggered.negate()))
-                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF)),
+                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL)),
                 // backup after shoot
                 DriveCommands.joystickDriveRobot(m_drive, () -> -0.15, () -> 0, () -> 0)
                     .withTimeout(0.4)
@@ -372,7 +369,7 @@ public class RobotContainer {
                     .andThen(m_superStruct.getTransitionCommand(Arm.State.LEVEL_1_FLIP,
                         Elevator.State.LEVEL_1))
                     .andThen(Commands.waitUntil(m_ClawRollerDS.triggered.negate()))
-                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF)));
+                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL)));
 
         // Place Coral on L4
         m_driver.rightTrigger().and(isCoralMode).and(() -> m_profiledElevator.isL4())
@@ -380,7 +377,7 @@ public class RobotContainer {
                 m_clawRoller.setStateCommand(ClawRoller.State.SCORE_L4)
                     .andThen(m_profiledArm.setStateCommand(Arm.State.LEVEL_4_BACK))
                     .andThen(Commands.waitUntil(m_ClawRollerDS.triggered.negate())
-                        .andThen(m_clawRoller.setStateCommand(ClawRoller.State.OFF))
+                        .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL))
                         .withTimeout(1))
                     // backup after shoot
                     .andThen(
@@ -391,7 +388,9 @@ public class RobotContainer {
                     .andThen(m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
                         Elevator.State.CORAL_INTAKE)));
 
+        // Intake coral from chute if you don't already have one
         m_driver.leftTrigger().or(m_operator.leftTrigger()).and(isCoralMode)
+            .and(m_ClawRollerDS.triggered.negate())
             .onTrue(
                 m_clawRoller.setStateCommand(ClawRoller.State.INTAKE)
                     .andThen(m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
@@ -412,7 +411,7 @@ public class RobotContainer {
                 m_profiledElevator.zeroSensorCommand(),
                 m_profiledElevator.setStateCommand(Elevator.State.CORAL_INTAKE)));
 
-        // Driver or Operator POV Down: Zero the Arm (HOMING)
+        // Driver Back: Zero the Arm (HOMING)
         m_driver.back().whileTrue(
             Commands.sequence(
                 // Move Arm to CORAL_INTAKE position before homing
@@ -435,12 +434,16 @@ public class RobotContainer {
         m_driver.povRight().or(m_operator.povRight())
             .onTrue(setRobotModeCommand(RobotMode.GAP));
 
+        // While operator start held winch in the climber
+        m_operator.start().onTrue(m_profiledArm.setStateCommand(Arm.State.CLIMB));
         m_operator.start().whileTrue(m_profiledClimber.setStateCommand(Climber.State.CLIMB))
             .onFalse(m_profiledClimber.setStateCommand(Climber.State.HOME));
 
+        // While operator back held release the climber
         m_operator.back().whileTrue(m_profiledClimber.setStateCommand(Climber.State.UNCLIMB))
             .onFalse(m_profiledClimber.setStateCommand(Climber.State.HOME));
 
+        // For custom tuning in AdvantageScope
         m_operator.rightTrigger().onTrue(m_profiledElevator.setStateCommand(Elevator.State.TUNING));
         m_operator.leftBumper().onTrue(m_profiledArm.setStateCommand(Arm.State.TUNING));
     }
