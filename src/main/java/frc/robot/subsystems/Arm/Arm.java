@@ -36,16 +36,16 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
         HOMING(new ProfileType.OPEN_VOLTAGE(() -> homingTuning.getAsDouble())),
         STOW(new ProfileType.MM_POSITION(() -> ANGLE)),
         CORAL_INTAKE(new ProfileType.MM_POSITION(() -> -0.62)),
-        LEVEL_1(new ProfileType.MM_POSITION(() -> -.59)), // -1.7
-        LEVEL_1_FLIP(new ProfileType.MM_POSITION(() -> -.88)),
+        LEVEL_1(new ProfileType.MM_POSITION(() -> -.62)), // -1.7
+        LEVEL_1_FLIP(new ProfileType.MM_POSITION(() -> -1.2)),
         LEVEL_2(new ProfileType.MM_POSITION(() -> -1.89)),
         LEVEL_3(new ProfileType.MM_POSITION(() -> ANGLE)),
         LEVEL_4(new ProfileType.MM_POSITION(() -> -2.3)), // ANGLE 2.3
         LEVEL_4_BACK(new ProfileType.MM_POSITION(() -> -.62)), // ANGLE 2.3
         DUNK(new ProfileType.MM_POSITION(() -> -1.403)),
         CLIMB(new ProfileType.MM_POSITION(() -> -4.0)),
-        ALGAE_LOW(new ProfileType.MM_POSITION(() -> -2.8)),
-        ALGAE_HIGH(new ProfileType.MM_POSITION(() -> -2.8)),
+        ALGAE_LOW(new ProfileType.MM_POSITION(() -> -1.8)),
+        ALGAE_HIGH(new ProfileType.MM_POSITION(() -> -1.8)),
         TUNING(new ProfileType.MM_POSITION(() -> positionTuning.getAsDouble())),
         CHARACTERIZATION(new ProfileType.CHARACTERIZATION()),
         COAST(new ProfileType.DISABLED_COAST()),

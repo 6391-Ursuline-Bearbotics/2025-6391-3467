@@ -24,6 +24,8 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.LinkedList;
 import java.util.List;
@@ -36,10 +38,12 @@ public class Vision extends SubsystemBase {
     private final Alert[] disconnectedAlerts;
     public boolean visionHasTarget = false;
     private boolean seesThisTarget = false;
+    public Field2d fieldMap = new Field2d();
 
     public Vision(VisionIO... io)
     {
         this.io = io;
+        SmartDashboard.putData("Quest Field Map", fieldMap);
 
         // Initialize inputs
         this.inputs = new VisionIOInputsAutoLogged[io.length];
@@ -168,6 +172,7 @@ public class Vision extends SubsystemBase {
                     VecBuilder.fill(linearStdDev, linearStdDev, angularStdDev));
             }
 
+            fieldMap.setRobotPose(robotPoses.get(0).toPose2d());
             // Log camera datadata
             Logger.recordOutput(
                 "Vision/Camera" + Integer.toString(cameraIndex) + "/TagPoses",

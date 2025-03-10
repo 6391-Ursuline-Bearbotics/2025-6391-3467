@@ -42,7 +42,8 @@ public class VisionIOQuestNav implements VisionIO {
 
     // Position of the quest on the robot (6" forward, centered side-to-side, pointed forward))
     private final Transform2d robotToQuest =
-        new Transform2d(Units.inchesToMeters(6), 0.0, new Rotation2d());
+        new Transform2d(Units.inchesToMeters(-7.5), Units.inchesToMeters(-11),
+            new Rotation2d(Units.degreesToRadians(-120)));
 
     public VisionIOQuestNav(String name)
     {

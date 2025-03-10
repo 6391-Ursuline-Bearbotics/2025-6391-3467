@@ -232,7 +232,7 @@ public class RobotContainer {
             m_drive,
             () -> -m_driver.getLeftY() * speedScalar.get(),
             () -> -m_driver.getLeftX() * speedScalar.get(),
-            () -> -m_driver.getRightX() * 0.5);
+            () -> -m_driver.getRightX() * 0.75);
     }
 
     private Command joystickDriveAtAngle(Supplier<Rotation2d> angle)
@@ -366,9 +366,9 @@ public class RobotContainer {
         m_driver.rightTrigger().and(isCoralMode).and(() -> m_profiledElevator.isL1())
             .onTrue(
                 m_clawRoller.setStateCommand(ClawRoller.State.SCORE_L1)
-                    .andThen(m_superStruct.getTransitionCommand(Arm.State.LEVEL_1_FLIP,
-                        Elevator.State.LEVEL_1))
+                    .andThen(m_profiledArm.setStateCommand(Arm.State.LEVEL_1_FLIP))
                     .andThen(Commands.waitUntil(m_ClawRollerDS.triggered.negate()))
+                    .andThen(m_profiledElevator.setStateCommand(Elevator.State.LEVEL_1_GAP))
                     .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL)));
 
         // Place Coral on L4
@@ -524,21 +524,4 @@ public class RobotContainer {
             "FieldSimulation/Algae",
             SimulatedArena.getInstance().getGamePiecesArrayByType("Algae"));
     }
-
-    /*
-     * public Command determineOffsetToRobotCenter() { return Commands.repeatingSequence(
-     * Commands.run( () -> { m_drive.drive(new ChassisSpeeds(0, 0, 0.314), null); },
-     * m_drive).withTimeout(0.5), Commands.runOnce(() -> { // Update current offset Translation2d
-     * offset = calculateOffsetToRobotCenter();
-     * 
-     * _calculatedOffsetToRobotCenter = _calculatedOffsetToRobotCenter .times((double)
-     * _calculatedOffsetToRobotCenterCount / (_calculatedOffsetToRobotCenterCount + 1))
-     * .plus(offset.div(_calculatedOffsetToRobotCenterCount + 1));
-     * _calculatedOffsetToRobotCenterCount++;
-     * 
-     * SmartDashboard.putNumberArray("Quest Calculated Offset to Robot Center", new double[]
-     * {_calculatedOffsetToRobotCenter.getX(), _calculatedOffsetToRobotCenter.getY()});
-     * 
-     * }).onlyIf(() -> getRotation().getMeasureZ().in(Degrees) > 30)); }
-     */
 }
