@@ -44,8 +44,8 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
         LEVEL_4_BACK(new ProfileType.MM_POSITION(() -> -.62)), // ANGLE 2.3
         DUNK(new ProfileType.MM_POSITION(() -> -1.403)),
         CLIMB(new ProfileType.MM_POSITION(() -> -4.0)),
-        ALGAE_LOW(new ProfileType.MM_POSITION(() -> -1.8)),
-        ALGAE_HIGH(new ProfileType.MM_POSITION(() -> -1.8)),
+        ALGAE_LOW(new ProfileType.MM_POSITION(() -> -5)),
+        ALGAE_HIGH(new ProfileType.MM_POSITION(() -> -5)),
         TUNING(new ProfileType.MM_POSITION(() -> positionTuning.getAsDouble())),
         CHARACTERIZATION(new ProfileType.CHARACTERIZATION()),
         COAST(new ProfileType.DISABLED_COAST()),

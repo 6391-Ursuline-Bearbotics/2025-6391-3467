@@ -216,7 +216,8 @@ public class DriveCommands {
     public static Command joystickApproach(
         Drive drive,
         DoubleSupplier ySupplier,
-        Supplier<Pose2d> approachSupplier)
+        Supplier<Pose2d> approachSupplier,
+        Supplier<Pose2d> robotPose)
     {
 
         // Create PID controller
@@ -245,7 +246,7 @@ public class DriveCommands {
             () -> {
                 currentDriveMode = DriveMode.dmApproach;
                 // Name constants
-                Translation2d currentTranslation = drive.getPose().getTranslation();
+                Translation2d currentTranslation = robotPose.get().getTranslation();
                 Translation2d approachTranslation = approachSupplier.get().getTranslation();
                 double distanceToApproach = currentTranslation.getDistance(approachTranslation);
 

@@ -22,7 +22,7 @@ public class ClawRoller
     static LoggedTunableNumber shotSpeedL4 =
         new LoggedTunableNumber("ClawRoller/ShotSpeedL4", 2.2);
     static LoggedTunableNumber shotSpeedAlgae =
-        new LoggedTunableNumber("ClawRoller/ShotSpeedAlgae", 2.0);
+        new LoggedTunableNumber("ClawRoller/ShotSpeedAlgae", -3.0);
 
     public final Trigger stalled = new Trigger(() -> super.inputs.torqueCurrentAmps[0] <= -60);
 

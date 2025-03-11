@@ -164,7 +164,7 @@
             "title": "Robot Pose Field Map",
             "x": 300.0,
             "y": 300.0,
-            "width": 350.0,
+            "width": 500.0,
             "height": 300.0,
             "type": "Field",
             "properties": {
@@ -231,6 +231,26 @@
               "period": 0.06,
               "data_type": "float[]",
               "show_submit_button": false
+            }
+          },
+          {
+            "title": "Quest Field Map",
+            "x": 800.0,
+            "y": 300.0,
+            "width": 450.0,
+            "height": 300.0,
+            "type": "Field",
+            "properties": {
+              "topic": "/SmartDashboard/Quest Field Map",
+              "period": 0.06,
+              "field_game": "Reefscape",
+              "robot_width": 0.85,
+              "robot_length": 0.85,
+              "show_other_objects": true,
+              "show_trajectories": true,
+              "field_rotation": 0.0,
+              "robot_color": 4294198070,
+              "trajectory_color": 4294967295
             }
           }
         ]

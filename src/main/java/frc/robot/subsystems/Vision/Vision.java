@@ -39,6 +39,7 @@ public class Vision extends SubsystemBase {
     public boolean visionHasTarget = false;
     private boolean seesThisTarget = false;
     public Field2d fieldMap = new Field2d();
+    private Pose2d pose = new Pose2d();
 
     public Vision(VisionIO... io)
     {
@@ -156,23 +157,24 @@ public class Vision extends SubsystemBase {
                 }
 
                 // Calculate standard deviations
-                double stdDevFactor =
-                    Math.pow(observation.averageTagDistance(), 2.0) / observation.tagCount();
-                double linearStdDev = linearStdDevBaseline * stdDevFactor;
-                double angularStdDev = angularStdDevBaseline * stdDevFactor;
-                if (cameraIndex < cameraStdDevFactors.length) {
-                    linearStdDev *= cameraStdDevFactors[cameraIndex];
-                    angularStdDev *= cameraStdDevFactors[cameraIndex];
-                }
+                /*
+                 * double stdDevFactor = Math.pow(observation.averageTagDistance(), 2.0) /
+                 * observation.tagCount(); double linearStdDev = linearStdDevBaseline *
+                 * stdDevFactor; double angularStdDev = angularStdDevBaseline * stdDevFactor; if
+                 * (cameraIndex < cameraStdDevFactors.length) { linearStdDev *=
+                 * cameraStdDevFactors[cameraIndex]; angularStdDev *=
+                 * cameraStdDevFactors[cameraIndex]; }
+                 */
 
                 // Send vision observation
                 consumer.accept(
                     observation.pose().toPose2d(),
                     observation.timestamp(),
-                    VecBuilder.fill(linearStdDev, linearStdDev, angularStdDev));
+                    VecBuilder.fill(0.01, 0.01, 999));
             }
 
-            fieldMap.setRobotPose(robotPoses.get(0).toPose2d());
+            pose = robotPoses.get(0).toPose2d();
+            fieldMap.setRobotPose(pose);
             // Log camera datadata
             Logger.recordOutput(
                 "Vision/Camera" + Integer.toString(cameraIndex) + "/TagPoses",
@@ -216,5 +218,10 @@ public class Vision extends SubsystemBase {
     public void updateConsumer(VisionConsumer consumer)
     {
         this.consumer = consumer;
+    }
+
+    public Pose2d getPose()
+    {
+        return pose;
     }
 }

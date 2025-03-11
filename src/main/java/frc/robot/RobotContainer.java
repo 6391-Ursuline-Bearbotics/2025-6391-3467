@@ -249,7 +249,8 @@ public class RobotContainer {
         return DriveCommands.joystickApproach(
             m_drive,
             () -> -m_driver.getLeftY() * speedMultiplier,
-            approachPose);
+            approachPose,
+            () -> m_vision.getPose());
     }
 
     public Command setRobotModeCommand(RobotMode mode)
@@ -274,31 +275,31 @@ public class RobotContainer {
                         .getSimulatedDriveTrainPose()) // reset odometry to actual robot pose during
                 // simulation
                 : () -> m_drive.setPose(
-                    new Pose2d(m_drive.getPose().getTranslation(), new Rotation2d())); // zero gyro
+                    new Pose2d(m_vision.getPose().getTranslation(), new Rotation2d())); // zero gyro
         m_driver.start().onTrue(Commands.runOnce(resetGyro, m_drive).ignoringDisable(true));
 
         // Driver Right Bumper: Approach Nearest Right-Side Reef Branch
         m_driver.rightBumper().and(isCoralMode)
             .whileTrue(Commands.either(
                 joystickApproach(
-                    () -> FieldConstants.getNearestReefBranch(m_drive.getPose(), ReefSide.RIGHT)),
+                    () -> FieldConstants.getNearestReefBranch(m_vision.getPose(), ReefSide.RIGHT)),
                 joystickDriveAtAngle(
-                    () -> FieldConstants.getNearestCoralStation(m_drive.getPose()).getRotation()),
+                    () -> FieldConstants.getNearestCoralStation(m_vision.getPose()).getRotation()),
                 m_ClawRollerDS.triggered));
 
         // Driver Left Bumper: Approach Nearest Left-Side Reef Branch
         m_driver.leftBumper().and(isCoralMode)
             .whileTrue(Commands.either(
                 joystickApproach(
-                    () -> FieldConstants.getNearestReefBranch(m_drive.getPose(), ReefSide.LEFT)),
+                    () -> FieldConstants.getNearestReefBranch(m_vision.getPose(), ReefSide.LEFT)),
                 joystickDriveAtAngle(
-                    () -> FieldConstants.getNearestCoralStation(m_drive.getPose()).getRotation()),
+                    () -> FieldConstants.getNearestCoralStation(m_vision.getPose()).getRotation()),
                 m_ClawRollerDS.triggered));
 
         // Driver Right Bumper and Algae mode: Approach Nearest Reef Face
         m_driver.rightBumper().and(isAlgaeMode)
             .whileTrue(
-                joystickApproach(() -> FieldConstants.getNearestReefFace(m_drive.getPose())));
+                joystickApproach(() -> FieldConstants.getNearestReefFace(m_vision.getPose())));
 
         // Driver A Button: Send Arm and Elevator to LEVEL_1
         m_driver.a().or(m_operator.a())
@@ -458,6 +459,14 @@ public class RobotContainer {
             Commands.waitUntil(m_ClawRollerDS.triggered)
                 .andThen(
                     m_superStruct.getTransitionCommand(Arm.State.LEVEL_4, Elevator.State.LEVEL_4,
+                        0.1,
+                        0.1)));
+
+        // Go to the L2 Position
+        NamedCommands.registerCommand("L2",
+            Commands.waitUntil(m_ClawRollerDS.triggered)
+                .andThen(
+                    m_superStruct.getTransitionCommand(Arm.State.LEVEL_2, Elevator.State.LEVEL_2,
                         0.1,
                         0.1)));
 
