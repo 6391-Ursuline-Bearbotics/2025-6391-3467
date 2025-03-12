@@ -360,6 +360,7 @@ public class RobotContainer {
                 DriveCommands.joystickDriveRobot(m_drive, () -> -0.15, () -> 0, () -> 0)
                     .withTimeout(0.4)
                     .andThen(Commands.runOnce(() -> m_drive.stop()))
+                    .andThen(Commands.runOnce(() -> speedMultiplier = 1.0))
                     .andThen(m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
                         Elevator.State.CORAL_INTAKE))));
 
