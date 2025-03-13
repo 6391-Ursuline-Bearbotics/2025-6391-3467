@@ -116,7 +116,8 @@ public class RobotContainer {
                         new ModuleIOTalonFXReal(TunerConstants.FrontRight),
                         new ModuleIOTalonFXReal(TunerConstants.BackLeft),
                         new ModuleIOTalonFXReal(TunerConstants.BackRight),
-                        m_vision::zeroQuest);
+                        m_vision::zeroQuest,
+                        () -> m_vision.getPose());
 
                 m_vision.updateConsumer(m_drive);
                 m_profiledArm = new Arm(new ArmIOTalonFX(), false);
@@ -134,6 +135,7 @@ public class RobotContainer {
                     new SwerveDriveSimulation(Drive.mapleSimConfig,
                         new Pose2d(3, 3, new Rotation2d()));
                 SimulatedArena.getInstance().addDriveTrainSimulation(m_driveSimulation);
+                m_vision = new Vision();
                 m_drive =
                     new Drive(
                         new GyroIOSim(this.m_driveSimulation.getGyroSimulation()),
@@ -145,7 +147,8 @@ public class RobotContainer {
                             TunerConstants.BackLeft, this.m_driveSimulation.getModules()[2]),
                         new ModuleIOTalonFXSim(
                             TunerConstants.BackRight, this.m_driveSimulation.getModules()[3]),
-                        m_driveSimulation::setSimulationWorldPose);
+                        m_driveSimulation::setSimulationWorldPose,
+                        () -> m_vision.getPose());
 
 
                 m_profiledArm = new Arm(new ArmIOSim(), true);
@@ -155,7 +158,6 @@ public class RobotContainer {
                 m_ClawRollerDS = new ClawRollerDS(new ClawRollerDSIOSim());
                 m_IntakeDS = new IntakeDS(new IntakeDSIOSim());
 
-                m_vision = new Vision();
                 m_vision.updateConsumer(m_drive);
 
                 break;
@@ -170,7 +172,8 @@ public class RobotContainer {
                         new ModuleIO() {},
                         new ModuleIO() {},
                         (robotPose) -> {
-                        });
+                        },
+                        () -> new Pose2d());
 
                 m_profiledArm = new Arm(new ArmIO() {}, true);
                 m_profiledElevator = new Elevator(new ElevatorIO() {}, true);

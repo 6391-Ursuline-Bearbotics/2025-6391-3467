@@ -55,6 +55,7 @@ import frc.robot.subsystems.Vision.Vision;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import org.ironmaple.simulation.drivesims.COTS;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
@@ -136,6 +137,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
         new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions,
             new Pose2d());
     private final Consumer<Pose2d> resetSimulationPoseCallBack;
+    private final Supplier<Pose2d> questPose;
 
     public Drive(
         GyroIO gyroIO,
@@ -143,11 +145,13 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
         ModuleIO frModuleIO,
         ModuleIO blModuleIO,
         ModuleIO brModuleIO,
-        Consumer<Pose2d> resetSimulationPoseCallBack)
+        Consumer<Pose2d> resetSimulationPoseCallBack,
+        Supplier<Pose2d> questPose)
     {
         SmartDashboard.putData("Robot Pose Field Map", fieldMap);
         this.gyroIO = gyroIO;
         this.resetSimulationPoseCallBack = resetSimulationPoseCallBack;
+        this.questPose = questPose;
         modules[0] = new Module(flModuleIO, 0, TunerConstants.FrontLeft);
         modules[1] = new Module(frModuleIO, 1, TunerConstants.FrontRight);
         modules[2] = new Module(blModuleIO, 2, TunerConstants.BackLeft);
@@ -375,7 +379,8 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
     @AutoLogOutput(key = "Odometry/Robot")
     public Pose2d getPose()
     {
-        return poseEstimator.getEstimatedPosition();
+        // return poseEstimator.getEstimatedPosition();
+        return questPose.get();
     }
 
     /** Returns the current odometry rotation. */
