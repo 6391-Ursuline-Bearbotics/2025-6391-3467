@@ -393,6 +393,7 @@ public class RobotContainer {
                 m_clawRoller.setStateCommand(ClawRoller.State.INTAKE)
                     .andThen(m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
                         Elevator.State.CORAL_INTAKE))
+                    .andThen(Commands.runOnce(() -> speedMultiplier = 1.0))
                     .andThen(Commands.waitUntil(m_ClawRollerDS.triggered))
                     .andThen(Commands.waitSeconds(0.25))
                     .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL)));
