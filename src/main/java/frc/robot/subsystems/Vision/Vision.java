@@ -167,10 +167,10 @@ public class Vision extends SubsystemBase {
                  */
 
                 // Send vision observation
-                consumer.accept(
-                    observation.pose().toPose2d(),
-                    observation.timestamp(),
-                    VecBuilder.fill(0.01, 0.01, 999));
+                /*
+                 * consumer.accept( observation.pose().toPose2d(), observation.timestamp(),
+                 * VecBuilder.fill(0.01, 0.01, 999));
+                 */
             }
 
             pose = robotPoses.get(0).toPose2d();

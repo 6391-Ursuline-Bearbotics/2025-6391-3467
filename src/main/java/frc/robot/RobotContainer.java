@@ -193,31 +193,27 @@ public class RobotContainer {
         // Set up auto routines
         m_autoChooser =
             new LoggedDashboardChooser<>("Auto Choices",
-                AutoBuilder.buildAutoChooser("3 Piece Right"));
+                AutoBuilder.buildAutoChooser("L2 Right"));
 
-        for (String auto : AutoBuilder.getAllAutoNames()) {
-            if (auto.contains("Right")) {
-                m_autoChooser.addOption(auto.replace("Right", "Left"),
-                    new PathPlannerAuto(auto, true));
-            }
-        }
+        /*
+         * for (String auto : AutoBuilder.getAllAutoNames()) { if (auto.contains("Right")) {
+         * m_autoChooser.addOption(auto.replace("Right", "Left"), new PathPlannerAuto(auto, true));
+         * } }
+         */
 
         // Set up SysId routines
-        m_autoChooser.addOption(
-            "Drive Wheel Radius Characterization",
-            DriveCommands.wheelRadiusCharacterization(m_drive));
-        m_autoChooser.addOption(
-            "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(m_drive));
-        m_autoChooser.addOption(
-            "Drive SysId (Quasistatic Forward)",
-            m_drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-        m_autoChooser.addOption(
-            "Drive SysId (Quasistatic Reverse)",
-            m_drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-        m_autoChooser.addOption(
-            "Drive SysId (Dynamic Forward)", m_drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
-        m_autoChooser.addOption(
-            "Drive SysId (Dynamic Reverse)", m_drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+        /*
+         * m_autoChooser.addOption( "Drive Wheel Radius Characterization",
+         * DriveCommands.wheelRadiusCharacterization(m_drive)); m_autoChooser.addOption(
+         * "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(m_drive));
+         * m_autoChooser.addOption( "Drive SysId (Quasistatic Forward)",
+         * m_drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward)); m_autoChooser.addOption(
+         * "Drive SysId (Quasistatic Reverse)",
+         * m_drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse)); m_autoChooser.addOption(
+         * "Drive SysId (Dynamic Forward)", m_drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
+         * m_autoChooser.addOption( "Drive SysId (Dynamic Reverse)",
+         * m_drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+         */
 
         // Configure the controller button and joystick bindings
         configureControllerBindings();
@@ -484,10 +480,14 @@ public class RobotContainer {
                 .andThen(Commands.waitSeconds(0.25))
                 .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL)));
 
-        // Score Coral on L4 and shut off when it leaves
+        // Score Coral on L4
         NamedCommands.registerCommand("Shoot",
             m_clawRoller.setStateCommand(ClawRoller.State.SCORE_L4)
                 .andThen(m_profiledArm.setStateCommand(Arm.State.LEVEL_4_BACK)));
+
+        // Score Coral on L2
+        NamedCommands.registerCommand("ShootL2",
+            m_clawRoller.setStateCommand(ClawRoller.State.SCORE));
     }
 
     /**

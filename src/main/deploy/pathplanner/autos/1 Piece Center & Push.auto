@@ -27,6 +27,24 @@
           "data": {
             "pathName": "H-PushRight"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Push-SourceTop"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "TopSource-K"
+          }
         }
       ]
     }
