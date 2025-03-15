@@ -11,9 +11,63 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "ShootL2"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.3
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Left-Wall-J-source"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LEFT SOURCE I"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootL2"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.3
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LEFT i Source"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake"
           }
         }
       ]
