@@ -196,12 +196,12 @@ public class RobotContainer {
                 AutoBuilder.buildAutoChooser("L2 Right"));
 
 
-        for (String auto : AutoBuilder.getAllAutoNames()) {
-            if (auto.contains("Right")) {
-                m_autoChooser.addOption(auto.replace("Right", "Left"),
-                    new PathPlannerAuto(auto, true));
-            }
-        }
+        // for (String auto : AutoBuilder.getAllAutoNames()) {
+        // if (auto.contains("Right")) {
+        // m_autoChooser.addOption(auto.replace("Right", "Left"),
+        // new PathPlannerAuto(auto, true));
+        // }
+        // }
 
 
         // Set up SysId routines
