@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 5.055596590909091,
-        "y": 5.2963778409090905
+        "x": 4.925965909090909,
+        "y": 5.236548295454545
       },
       "prevControl": {
-        "x": 5.494346590909091,
-        "y": 6.2237357954545445
+        "x": 5.364715909090909,
+        "y": 6.163906249999999
       },
       "nextControl": null,
       "isLocked": false,
@@ -36,7 +36,12 @@
       "name": "L2",
       "waypointRelativePos": 0,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "L2"
+        }
+      }
     }
   ],
   "globalConstraints": {

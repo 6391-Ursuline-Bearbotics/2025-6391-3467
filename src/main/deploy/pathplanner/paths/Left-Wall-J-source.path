@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.055596590909091,
-        "y": 5.2963778409090905
+        "x": 4.925965909090909,
+        "y": 5.236548295454545
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.205170454545455,
-        "y": 6.243678977272728
+        "x": 5.075539772727273,
+        "y": 6.1838494318181825
       },
       "isLocked": false,
       "linkedName": "Left-Wall-J"
     },
     {
       "anchor": {
-        "x": 1.6008445945945946,
-        "y": 7.048817567567567
+        "x": 1.555568181818182,
+        "y": 7.121178977272727
       },
       "prevControl": {
-        "x": 2.8064189189189195,
-        "y": 6.208868243243242
+        "x": 2.761142506142507,
+        "y": 6.281229652948403
       },
       "nextControl": null,
       "isLocked": false,
@@ -36,7 +36,12 @@
       "name": "Home",
       "waypointRelativePos": 0,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Home"
+        }
+      }
     }
   ],
   "globalConstraints": {
