@@ -84,6 +84,7 @@ public class RobotContainer {
     public final Vision m_vision;
 
     private double speedMultiplier = 0.85;
+    private boolean rumbleReady = false;
     private Supplier<Double> speedScalar = () -> speedMultiplier;
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -91,7 +92,8 @@ public class RobotContainer {
     {
         switch (Constants.currentMode) {
             case REAL:
-                m_vision = new Vision(new VisionIOQuestNav(VisionConstants.questName));
+                m_vision = new Vision(new VisionIOQuestNav(VisionConstants.questName),
+                    new VisionIOLimelight(VisionConstants.camera0Name, getRotation()));
 
                 // Real robot, instantiate hardware IO implementations
                 m_drive =
@@ -194,6 +196,7 @@ public class RobotContainer {
                     Elevator.State.CORAL_INTAKE))
                 .andThen(Commands.runOnce(() -> speedMultiplier = 1.0))
                 .andThen(Commands.waitUntil(m_ClawRollerDS.triggered))
+                .andThen(() -> rumbleReady = true)
                 .andThen(Commands.waitSeconds(0.25))
                 .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL))
                 .andThen(m_superStruct.getTransitionCommand(Arm.State.LEVEL_2,
@@ -420,6 +423,9 @@ public class RobotContainer {
         // For custom tuning in AdvantageScope
         m_operator.rightTrigger().onTrue(m_profiledElevator.setStateCommand(Elevator.State.TUNING));
         m_operator.leftBumper().onTrue(m_profiledArm.setStateCommand(Arm.State.TUNING));
+
+        Trigger driverRumble = new Trigger(() -> m_vision.hasNewTarget && rumbleReady);
+        driverRumble.onTrue(m_driver.rumbleForTime(1).andThen(() -> rumbleReady = false));
     }
 
     /**
@@ -509,5 +515,10 @@ public class RobotContainer {
         Logger.recordOutput(
             "FieldSimulation/Algae",
             SimulatedArena.getInstance().getGamePiecesArrayByType("Algae"));
+    }
+
+    public Supplier<Rotation2d> getRotation()
+    {
+        return () -> m_drive.getRotation();
     }
 }

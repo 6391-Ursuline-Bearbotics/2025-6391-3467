@@ -26,6 +26,8 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
         new LoggedTunableNumber("Arm/HomingVoltageSP", 2);
     static LoggedTunableNumber positionTuning =
         new LoggedTunableNumber("Arm/PositionTuningSP", -1.0);
+    static LoggedTunableNumber armSafety =
+        new LoggedTunableNumber("Arm/armSafety", -1.0);
 
     // .14 rot is the max extension
     private static final double ANGLE = -2.48;
@@ -96,6 +98,8 @@ public class Arm extends GenericMotionProfiledSubsystem<Arm.State> {
         new Trigger(
             () -> homedDebouncer.calculate(
                 (this.state == State.HOMING && Math.abs(io.getVelocity()) < .01)));
+
+    public Trigger safePosition = new Trigger(() -> io.getPosition() < armSafety.getAsDouble());
 
     public Command zeroSensorCommand()
     {

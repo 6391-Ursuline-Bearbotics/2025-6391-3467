@@ -37,6 +37,7 @@ public class Vision extends SubsystemBase {
     private final VisionIOInputsAutoLogged[] inputs;
     private final Alert[] disconnectedAlerts;
     public boolean visionHasTarget = false;
+    public boolean hasNewTarget = false;
     private boolean seesThisTarget = false;
     public Field2d fieldMap = new Field2d();
     private Pose2d pose = new Pose2d();
@@ -119,7 +120,11 @@ public class Vision extends SubsystemBase {
             }
 
             // Report to visionhas Target whether or not vision sees at least one tag
+            hasNewTarget = false;
             if (seesThisTarget) {
+                if (!visionHasTarget) {
+                    hasNewTarget = true;
+                }
                 visionHasTarget = true;
                 // Now reset seesThisTarget for next periodic loop
                 seesThisTarget = false;
@@ -157,20 +162,19 @@ public class Vision extends SubsystemBase {
                 }
 
                 // Calculate standard deviations
-                /*
-                 * double stdDevFactor = Math.pow(observation.averageTagDistance(), 2.0) /
-                 * observation.tagCount(); double linearStdDev = linearStdDevBaseline *
-                 * stdDevFactor; double angularStdDev = angularStdDevBaseline * stdDevFactor; if
-                 * (cameraIndex < cameraStdDevFactors.length) { linearStdDev *=
-                 * cameraStdDevFactors[cameraIndex]; angularStdDev *=
-                 * cameraStdDevFactors[cameraIndex]; }
-                 */
+
+                double stdDevFactor = Math.pow(observation.averageTagDistance(), 2.0) /
+                    observation.tagCount();
+                double linearStdDev = linearStdDevBaseline *
+                    stdDevFactor;
+                if (cameraIndex < cameraStdDevFactors.length) {
+                    linearStdDev *=
+                        cameraStdDevFactors[cameraIndex];
+                }
 
                 // Send vision observation
-                /*
-                 * consumer.accept( observation.pose().toPose2d(), observation.timestamp(),
-                 * VecBuilder.fill(0.01, 0.01, 999));
-                 */
+                consumer.accept(observation.pose().toPose2d(), observation.timestamp(),
+                    VecBuilder.fill(linearStdDev, linearStdDev, 999999));
             }
 
             pose = robotPoses.get(0).toPose2d();
