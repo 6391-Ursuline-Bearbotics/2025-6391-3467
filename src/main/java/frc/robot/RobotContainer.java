@@ -79,8 +79,6 @@ public class RobotContainer {
     public final IntakeDS m_IntakeDS;
     private final Superstructure m_superStruct;
 
-    private Command intakeCommand;
-
     public final Vision m_vision;
 
     private double speedMultiplier = 0.85;
@@ -189,18 +187,6 @@ public class RobotContainer {
         // new PathPlannerAuto(auto, true));
         // }
         // }
-
-        intakeCommand =
-            m_clawRoller.setStateCommand(ClawRoller.State.INTAKE)
-                .andThen(m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
-                    Elevator.State.CORAL_INTAKE))
-                .andThen(Commands.runOnce(() -> speedMultiplier = 1.0))
-                .andThen(Commands.waitUntil(m_ClawRollerDS.triggered))
-                .andThen(() -> rumbleReady = true)
-                .andThen(Commands.waitSeconds(0.25))
-                .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL))
-                .andThen(m_superStruct.getTransitionCommand(Arm.State.LEVEL_2,
-                    Elevator.State.LEVEL_2));
 
         // Set up SysId routines
         /*
@@ -326,7 +312,7 @@ public class RobotContainer {
         // Driver Right Trigger: Place Coral on L2/L3
         m_driver.rightTrigger()
             .and(() -> m_profiledElevator.isL2() || m_profiledElevator.isL3())
-            .onTrue(Commands.parallel(
+            .onTrue(Commands.sequence(
                 m_clawRoller.setStateCommand(ClawRoller.State.SCORE)
                     .andThen(Commands.waitUntil(m_ClawRollerDS.triggered.negate()))
                     .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL)),
@@ -337,7 +323,16 @@ public class RobotContainer {
                     .andThen(Commands.runOnce(() -> speedMultiplier = 1.0))
                     .andThen(m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
                         Elevator.State.CORAL_INTAKE))
-                    .andThen(intakeCommand)));
+                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.INTAKE))
+                    .andThen(m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
+                        Elevator.State.CORAL_INTAKE))
+                    .andThen(Commands.runOnce(() -> speedMultiplier = 1.0))
+                    .andThen(Commands.waitUntil(m_ClawRollerDS.triggered))
+                    .andThen(() -> rumbleReady = true)
+                    .andThen(Commands.waitSeconds(0.25))
+                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL))
+                    .andThen(m_superStruct.getTransitionCommand(Arm.State.LEVEL_2,
+                        Elevator.State.LEVEL_2))));
 
         // Place Coral on L1
         m_driver.rightTrigger().and(() -> m_profiledElevator.isL1())
@@ -349,7 +344,16 @@ public class RobotContainer {
                     .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL))
                     .andThen(m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
                         Elevator.State.CORAL_INTAKE))
-                    .andThen(intakeCommand));
+                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.INTAKE))
+                    .andThen(m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
+                        Elevator.State.CORAL_INTAKE))
+                    .andThen(Commands.runOnce(() -> speedMultiplier = 1.0))
+                    .andThen(Commands.waitUntil(m_ClawRollerDS.triggered))
+                    .andThen(() -> rumbleReady = true)
+                    .andThen(Commands.waitSeconds(0.25))
+                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL))
+                    .andThen(m_superStruct.getTransitionCommand(Arm.State.LEVEL_2,
+                        Elevator.State.LEVEL_2)));
 
         // Place Coral on L4
         m_driver.rightTrigger().and(() -> m_profiledElevator.isL4())
@@ -367,12 +371,30 @@ public class RobotContainer {
                     .andThen(Commands.runOnce(() -> speedMultiplier = 1.0))
                     .andThen(m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
                         Elevator.State.CORAL_INTAKE))
-                    .andThen(intakeCommand));
+                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.INTAKE))
+                    .andThen(m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
+                        Elevator.State.CORAL_INTAKE))
+                    .andThen(Commands.runOnce(() -> speedMultiplier = 1.0))
+                    .andThen(Commands.waitUntil(m_ClawRollerDS.triggered))
+                    .andThen(() -> rumbleReady = true)
+                    .andThen(Commands.waitSeconds(0.25))
+                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL))
+                    .andThen(m_superStruct.getTransitionCommand(Arm.State.LEVEL_2,
+                        Elevator.State.LEVEL_2)));
 
         // Intake coral from chute if you don't already have one
         m_driver.leftTrigger().or(m_operator.leftTrigger())
             .and(m_ClawRollerDS.triggered.negate())
-            .onTrue(intakeCommand);
+            .onTrue(m_clawRoller.setStateCommand(ClawRoller.State.INTAKE)
+                .andThen(m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
+                    Elevator.State.CORAL_INTAKE))
+                .andThen(Commands.runOnce(() -> speedMultiplier = 1.0))
+                .andThen(Commands.waitUntil(m_ClawRollerDS.triggered))
+                .andThen(() -> rumbleReady = true)
+                .andThen(Commands.waitSeconds(0.25))
+                .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL))
+                .andThen(m_superStruct.getTransitionCommand(Arm.State.LEVEL_2,
+                    Elevator.State.LEVEL_2)));
 
         // Driver or Operator POV Down: Zero the Elevator (HOMING)
         m_driver.povDown().or(m_operator.povDown()).whileTrue(

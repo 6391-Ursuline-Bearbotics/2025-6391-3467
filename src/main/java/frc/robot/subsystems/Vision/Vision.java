@@ -177,7 +177,7 @@ public class Vision extends SubsystemBase {
                     VecBuilder.fill(linearStdDev, linearStdDev, 999999));
             }
 
-            pose = robotPoses.get(0).toPose2d();
+            // pose = robotPoses.get(0).toPose2d();
             fieldMap.setRobotPose(pose);
             // Log camera datadata
             Logger.recordOutput(
