@@ -79,24 +79,9 @@ public class RobotContainer {
     public final IntakeDS m_IntakeDS;
     private final Superstructure m_superStruct;
 
+    private Command intakeCommand;
+
     public final Vision m_vision;
-
-    @RequiredArgsConstructor
-    @Getter
-    public enum RobotMode {
-        CORAL,
-        ALGAE,
-        GAP;
-    }
-
-    @Getter
-    @Setter
-    private RobotMode robotMode = RobotMode.CORAL;
-
-    // Triggers for mode switching
-    private Trigger isCoralMode = new Trigger(() -> RobotMode.CORAL == robotMode);
-    private Trigger isGapMode = new Trigger(() -> RobotMode.GAP == robotMode);
-    private Trigger isAlgaeMode = new Trigger(() -> RobotMode.ALGAE == robotMode);
 
     private double speedMultiplier = 0.85;
     private Supplier<Double> speedScalar = () -> speedMultiplier;
@@ -203,6 +188,16 @@ public class RobotContainer {
         // }
         // }
 
+        intakeCommand =
+            m_clawRoller.setStateCommand(ClawRoller.State.INTAKE)
+                .andThen(m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
+                    Elevator.State.CORAL_INTAKE))
+                .andThen(Commands.runOnce(() -> speedMultiplier = 1.0))
+                .andThen(Commands.waitUntil(m_ClawRollerDS.triggered))
+                .andThen(Commands.waitSeconds(0.25))
+                .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL))
+                .andThen(m_superStruct.getTransitionCommand(Arm.State.LEVEL_2,
+                    Elevator.State.LEVEL_2));
 
         // Set up SysId routines
         /*
@@ -252,14 +247,6 @@ public class RobotContainer {
             () -> m_vision.getPose());
     }
 
-    public Command setRobotModeCommand(RobotMode mode)
-    {
-        return Commands.runOnce(
-            () -> {
-                robotMode = mode;
-            });
-    }
-
     /** Button and Command mappings */
     private void configureControllerBindings()
     {
@@ -278,7 +265,7 @@ public class RobotContainer {
         m_driver.start().onTrue(Commands.runOnce(resetGyro, m_drive).ignoringDisable(true));
 
         // Driver Right Bumper: Approach Nearest Right-Side Reef Branch
-        m_driver.rightBumper().and(isCoralMode)
+        m_driver.rightBumper().and(() -> !m_profiledElevator.isAlgae())
             .whileTrue(Commands.either(
                 joystickApproach(
                     () -> FieldConstants.getNearestReefBranch(m_vision.getPose(), ReefSide.RIGHT)),
@@ -287,7 +274,7 @@ public class RobotContainer {
                 m_ClawRollerDS.triggered));
 
         // Driver Left Bumper: Approach Nearest Left-Side Reef Branch
-        m_driver.leftBumper().and(isCoralMode)
+        m_driver.leftBumper().and(() -> !m_profiledElevator.isAlgae())
             .whileTrue(Commands.either(
                 joystickApproach(
                     () -> FieldConstants.getNearestReefBranch(m_vision.getPose(), ReefSide.LEFT)),
@@ -295,61 +282,46 @@ public class RobotContainer {
                     () -> FieldConstants.getNearestCoralStation(m_vision.getPose()).getRotation()),
                 m_ClawRollerDS.triggered));
 
-        // Driver Right Bumper and Algae mode: Approach Nearest Reef Face
-        m_driver.rightBumper().and(isAlgaeMode)
+        // Driver or Operator Right Bumper and Algae mode: Approach Nearest Reef Face
+        m_driver.rightBumper().and(() -> m_profiledElevator.isAlgae())
+            .or(m_operator.rightBumper().and(() -> m_profiledElevator.isAlgae()))
             .whileTrue(
                 joystickApproach(() -> FieldConstants.getNearestReefFace(m_vision.getPose())));
 
         // Driver A Button: Send Arm and Elevator to LEVEL_1
         m_driver.a().or(m_operator.a())
-            .and(isCoralMode).and(() -> m_clawRoller.notIntaking())
+            .and(() -> m_clawRoller.notIntaking())
             .onTrue(
                 Commands.runOnce(() -> speedMultiplier = 0.85).andThen(
                     m_superStruct.getTransitionCommand(Arm.State.LEVEL_1, Elevator.State.LEVEL_1)));
 
         // Driver X Button: Send Arm and Elevator to LEVEL_2
         m_driver.x().or(m_operator.x())
-            .and(isCoralMode).and(() -> m_clawRoller.notIntaking())
+            .and(() -> m_clawRoller.notIntaking())
             .onTrue(
                 Commands.runOnce(() -> speedMultiplier = 0.85).andThen(
                     m_superStruct.getTransitionCommand(Arm.State.LEVEL_2, Elevator.State.LEVEL_2)));
 
-        // Driver X Button and Algae mode: Send Arm and Elevator to ALGAE_LOW position
-        m_driver.x().or(m_operator.x())
-            .and(isAlgaeMode)
-            .onTrue(Commands.parallel(
-                m_superStruct.getTransitionCommand(Arm.State.ALGAE_LOW,
-                    Elevator.State.ALGAE_LOW),
-                m_clawRoller.setStateCommand(ClawRoller.State.EJECT)));
-
         // Driver B Button: Send Arm and Elevator to LEVEL_3
         m_driver.b().or(m_operator.b())
-            .and(isCoralMode).and(() -> m_clawRoller.notIntaking())
+            .and(() -> m_clawRoller.notIntaking())
             .onTrue(
                 Commands.runOnce(() -> speedMultiplier = 0.5).andThen(
                     m_superStruct.getTransitionCommand(Arm.State.LEVEL_3, Elevator.State.LEVEL_3)));
 
-        // Driver B Button and Algae mode: Send Arm and Elevator to ALGAE_HIGH position
-        m_driver.b().or(m_operator.b())
-            .and(isAlgaeMode)
-            .onTrue(Commands.parallel(
-                m_superStruct.getTransitionCommand(Arm.State.ALGAE_HIGH,
-                    Elevator.State.ALGAE_HIGH),
-                m_clawRoller.setStateCommand(ClawRoller.State.EJECT)));
-
         // Driver Y Button: Send Arm and Elevator to LEVEL_4
         m_driver.y().or(m_operator.y())
-            .and(isCoralMode).and(() -> m_clawRoller.notIntaking())
+            .and(() -> m_clawRoller.notIntaking())
             .onTrue(
                 Commands.runOnce(() -> speedMultiplier = 0.5).andThen(
                     m_superStruct.getTransitionCommand(Arm.State.LEVEL_4, Elevator.State.LEVEL_4)));
 
         // Driver Right Trigger: Any other level
-        m_driver.rightTrigger().and(isCoralMode).and(() -> m_profiledElevator.isOther())
+        m_driver.rightTrigger().and(() -> m_profiledElevator.isOther())
             .onTrue(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL));
 
         // Driver Right Trigger: Place Coral on L2/L3
-        m_driver.rightTrigger().and(isCoralMode)
+        m_driver.rightTrigger()
             .and(() -> m_profiledElevator.isL2() || m_profiledElevator.isL3())
             .onTrue(Commands.parallel(
                 m_clawRoller.setStateCommand(ClawRoller.State.SCORE)
@@ -361,19 +333,23 @@ public class RobotContainer {
                     .andThen(Commands.runOnce(() -> m_drive.stop()))
                     .andThen(Commands.runOnce(() -> speedMultiplier = 1.0))
                     .andThen(m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
-                        Elevator.State.CORAL_INTAKE))));
+                        Elevator.State.CORAL_INTAKE))
+                    .andThen(intakeCommand)));
 
         // Place Coral on L1
-        m_driver.rightTrigger().and(isCoralMode).and(() -> m_profiledElevator.isL1())
+        m_driver.rightTrigger().and(() -> m_profiledElevator.isL1())
             .onTrue(
                 m_clawRoller.setStateCommand(ClawRoller.State.SCORE_L1)
                     .andThen(m_profiledArm.setStateCommand(Arm.State.LEVEL_1_FLIP))
                     .andThen(Commands.waitUntil(m_ClawRollerDS.triggered.negate()))
-                    .andThen(m_profiledElevator.setStateCommand(Elevator.State.LEVEL_1_GAP))
-                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL)));
+                    .andThen(m_profiledElevator.setStateCommand(Elevator.State.LEVEL_1))
+                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL))
+                    .andThen(m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
+                        Elevator.State.CORAL_INTAKE))
+                    .andThen(intakeCommand));
 
         // Place Coral on L4
-        m_driver.rightTrigger().and(isCoralMode).and(() -> m_profiledElevator.isL4())
+        m_driver.rightTrigger().and(() -> m_profiledElevator.isL4())
             .onTrue(
                 m_clawRoller.setStateCommand(ClawRoller.State.SCORE_L4)
                     .andThen(m_profiledArm.setStateCommand(Arm.State.LEVEL_4_BACK))
@@ -387,19 +363,13 @@ public class RobotContainer {
                     .andThen(Commands.runOnce(() -> m_drive.stop()))
                     .andThen(Commands.runOnce(() -> speedMultiplier = 1.0))
                     .andThen(m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
-                        Elevator.State.CORAL_INTAKE)));
+                        Elevator.State.CORAL_INTAKE))
+                    .andThen(intakeCommand));
 
         // Intake coral from chute if you don't already have one
-        m_driver.leftTrigger().or(m_operator.leftTrigger()).and(isCoralMode)
+        m_driver.leftTrigger().or(m_operator.leftTrigger())
             .and(m_ClawRollerDS.triggered.negate())
-            .onTrue(
-                m_clawRoller.setStateCommand(ClawRoller.State.INTAKE)
-                    .andThen(m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
-                        Elevator.State.CORAL_INTAKE))
-                    .andThen(Commands.runOnce(() -> speedMultiplier = 1.0))
-                    .andThen(Commands.waitUntil(m_ClawRollerDS.triggered))
-                    .andThen(Commands.waitSeconds(0.25))
-                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL)));
+            .onTrue(intakeCommand);
 
         // Driver or Operator POV Down: Zero the Elevator (HOMING)
         m_driver.povDown().or(m_operator.povDown()).whileTrue(
@@ -413,8 +383,8 @@ public class RobotContainer {
                 m_profiledElevator.zeroSensorCommand(),
                 m_profiledElevator.setStateCommand(Elevator.State.CORAL_INTAKE)));
 
-        // Driver Back: Zero the Arm (HOMING)
-        m_driver.back().whileTrue(
+        // Driver POV Right: Zero the Arm (HOMING)
+        m_driver.povRight().or(m_operator.povRight()).whileTrue(
             Commands.sequence(
                 // Move Arm to CORAL_INTAKE position before homing
                 m_profiledArm.setStateCommand(Arm.State.CORAL_INTAKE),
@@ -424,17 +394,19 @@ public class RobotContainer {
                 m_profiledArm.zeroSensorCommand(),
                 m_profiledArm.setStateCommand(Arm.State.CORAL_INTAKE)));
 
-        // Left DPAD sets Coral Mode
+        // Driver POV Left Button: Send Arm and Elevator to ALGAE_LOW position
         m_driver.povLeft().or(m_operator.povLeft())
-            .onTrue(setRobotModeCommand(RobotMode.CORAL));
+            .onTrue(Commands.parallel(
+                m_superStruct.getTransitionCommand(Arm.State.ALGAE_LOW,
+                    Elevator.State.ALGAE_LOW),
+                m_clawRoller.setStateCommand(ClawRoller.State.EJECT)));
 
-        // Up DPAD sets Algae Mode
+        // Driver POV Up Button: Send Arm and Elevator to ALGAE_HIGH position
         m_driver.povUp().or(m_operator.povUp())
-            .onTrue(setRobotModeCommand(RobotMode.ALGAE));
-
-        // Right DPAD sets Gap Mode
-        m_driver.povRight().or(m_operator.povRight())
-            .onTrue(setRobotModeCommand(RobotMode.GAP));
+            .onTrue(Commands.parallel(
+                m_superStruct.getTransitionCommand(Arm.State.ALGAE_HIGH,
+                    Elevator.State.ALGAE_HIGH),
+                m_clawRoller.setStateCommand(ClawRoller.State.EJECT)));
 
         // While operator start held winch in the climber
         m_operator.start().onTrue(m_profiledArm.setStateCommand(Arm.State.CLIMB));

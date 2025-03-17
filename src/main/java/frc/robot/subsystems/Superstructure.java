@@ -8,11 +8,15 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.Arm.Arm;
 import frc.robot.subsystems.Elevator.Elevator;
+import frc.robot.util.LoggedTunableNumber;
 
 /**
  * Management class for synchronizing Arm and Elevator movements
  */
 public class Superstructure {
+
+    static LoggedTunableNumber crashTuning =
+        new LoggedTunableNumber("Elevator/crashDelay", 1.0);
 
     Arm m_Arm;
     Elevator m_Elevator;
@@ -41,18 +45,17 @@ public class Superstructure {
     {
         return Commands.race(
             Commands.either(
-                Commands.sequence(
+                Commands.parallel(
                     // Always move Arm to STOW position before moving Elevator
                     m_Arm.setStateCommand(Arm.State.STOW)
                         .until(() -> m_Arm.atPosition(armTolerance)),
                     // Move Elevator to new position
-                    Commands.waitUntil(() -> m_Arm.atPosition(armTolerance))
+                    Commands.waitSeconds(crashTuning.getAsDouble())
                         .andThen(m_Elevator.setStateCommand(elevatorState)
-                            .until(() -> m_Elevator.atPosition(elevTolerance))),
+                            .until(() -> m_Elevator.atPosition(elevTolerance))))
                     // Reposition Arm to new position
-                    Commands.waitUntil(() -> m_Elevator.atPosition(elevTolerance)).andThen(
-                        m_Arm.setStateCommand(armState)
-                            .until(() -> m_Arm.atPosition(armTolerance)))),
+                    .andThen(m_Arm.setStateCommand(armState)
+                        .until(() -> m_Arm.atPosition(armTolerance))),
                 m_Arm.setStateCommand(armState).until(() -> m_Arm.atPosition(armTolerance)),
                 () -> elevatorState != m_Elevator.getState()),
             Commands.waitSeconds(5));

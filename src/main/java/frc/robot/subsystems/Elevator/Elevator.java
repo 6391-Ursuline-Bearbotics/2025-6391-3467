@@ -34,13 +34,10 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
     public enum State implements TargetState {
         HOMING(new ProfileType.OPEN_VOLTAGE(() -> homingTuning.getAsDouble())),
         CORAL_INTAKE(new ProfileType.MM_POSITION(() -> BOTTOM)),
-        LEVEL_1(new ProfileType.MM_POSITION(() -> BOTTOM + .9)),
+        LEVEL_1(new ProfileType.MM_POSITION(() -> BOTTOM)),
         LEVEL_2(new ProfileType.MM_POSITION(() -> 2.1)),
         LEVEL_3(new ProfileType.MM_POSITION(() -> 5.1)),
         LEVEL_4(new ProfileType.MM_POSITION(() -> 9.50)),
-        LEVEL_1_GAP(new ProfileType.MM_POSITION(() -> BOTTOM)),
-        LEVEL_2_GAP(new ProfileType.MM_POSITION(() -> 2.7)),
-        LEVEL_3_GAP(new ProfileType.MM_POSITION(() -> 5.7)),
         ALGAE_LOW(new ProfileType.MM_POSITION(() -> 5.3)), // 5.5
         ALGAE_HIGH(new ProfileType.MM_POSITION(() -> 8.1)), // 8.2
         TUNING(new ProfileType.MM_POSITION(() -> positionTuning.getAsDouble())),
@@ -104,21 +101,18 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
     public boolean isL1()
     {
         // return this.getState() == Elevator.State.CORAL_INTAKE;
-        return this.getState() == Elevator.State.LEVEL_1
-            || this.getState() == Elevator.State.LEVEL_1_GAP;
+        return this.getState() == Elevator.State.LEVEL_1;
 
     }
 
     public boolean isL2()
     {
-        return this.getState() == Elevator.State.LEVEL_2
-            || this.getState() == Elevator.State.LEVEL_2_GAP;
+        return this.getState() == Elevator.State.LEVEL_2;
     }
 
     public boolean isL3()
     {
-        return this.getState() == Elevator.State.LEVEL_3
-            || this.getState() == Elevator.State.LEVEL_3_GAP;
+        return this.getState() == Elevator.State.LEVEL_3;
     }
 
     public boolean isL4()
@@ -130,6 +124,12 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
     {
         return this.getState() == Elevator.State.CORAL_INTAKE
             || this.getState() == Elevator.State.ALGAE_HIGH
+            || this.getState() == Elevator.State.ALGAE_LOW;
+    }
+
+    public boolean isAlgae()
+    {
+        return this.getState() == Elevator.State.ALGAE_HIGH
             || this.getState() == Elevator.State.ALGAE_LOW;
     }
 
