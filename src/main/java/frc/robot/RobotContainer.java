@@ -91,7 +91,8 @@ public class RobotContainer {
         switch (Constants.currentMode) {
             case REAL:
                 m_vision = new Vision(new VisionIOQuestNav(VisionConstants.questName),
-                    new VisionIOLimelight(VisionConstants.camera0Name, getRotation()));
+                    new VisionIOLimelight(VisionConstants.camera0Name, getRotation()),
+                    new VisionIOLimelight(VisionConstants.camera1Name, getRotation()));
 
                 // Real robot, instantiate hardware IO implementations
                 m_drive =
