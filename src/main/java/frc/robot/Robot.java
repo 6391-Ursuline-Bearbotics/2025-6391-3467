@@ -22,6 +22,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.Arm.Arm;
+import frc.robot.subsystems.Claw.ClawRoller.ClawRoller;
+import frc.robot.subsystems.Elevator.Elevator;
 import frc.robot.util.Elastic;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -221,6 +224,10 @@ public class Robot extends LoggedRobot {
     @Override
     public void teleopInit()
     {
+        m_robotContainer.m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
+            Elevator.State.CORAL_INTAKE)
+            .andThen(m_robotContainer.m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL));
+
         // This makes sure that the autonomous stops running when
         // teleop starts running. If you want the autonomous to
         // continue until interrupted by another command, remove
