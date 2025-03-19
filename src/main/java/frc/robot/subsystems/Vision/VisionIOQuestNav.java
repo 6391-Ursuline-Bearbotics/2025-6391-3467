@@ -15,6 +15,8 @@ import edu.wpi.first.networktables.IntegerSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class VisionIOQuestNav implements VisionIO {
     // Configure Network Tables topics (questnav/...) to communicate with the Quest HMD
@@ -22,6 +24,7 @@ public class VisionIOQuestNav implements VisionIO {
     NetworkTable nt4Table = nt4Instance.getTable("questnav");
     private IntegerSubscriber questMiso = nt4Table.getIntegerTopic("miso").subscribe(0);
     private IntegerPublisher questMosi = nt4Table.getIntegerTopic("mosi").publish();
+    public Field2d fieldMap = new Field2d();
 
     // Subscribe to the Network Tables questnav data topics
     private DoubleSubscriber questTimestamp = nt4Table.getDoubleTopic("timestamp").subscribe(0.0f);
@@ -51,6 +54,7 @@ public class VisionIOQuestNav implements VisionIO {
         if (questMiso.get() != 99) {
             questMosi.set(1);
         }
+        SmartDashboard.putData("Quest Field Map", fieldMap);
     }
 
     @Override
@@ -70,6 +74,8 @@ public class VisionIOQuestNav implements VisionIO {
                         11, // Tag count
                         0.0) // Average tag distance
             }; // Observation type
+
+        fieldMap.setRobotPose(pose);
 
         cleanUpQuestNavMessages();
     }

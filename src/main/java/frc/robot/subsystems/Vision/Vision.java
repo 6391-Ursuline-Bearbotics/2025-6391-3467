@@ -39,13 +39,12 @@ public class Vision extends SubsystemBase {
     public boolean visionHasTarget = false;
     public boolean hasNewTarget = false;
     private boolean seesThisTarget = false;
-    public Field2d fieldMap = new Field2d();
     private Pose2d pose = new Pose2d();
 
-    public Vision(VisionIO... io)
+    public Vision(VisionConsumer consumer, VisionIO... io)
     {
+        this.consumer = consumer;
         this.io = io;
-        SmartDashboard.putData("Quest Field Map", fieldMap);
 
         // Initialize inputs
         this.inputs = new VisionIOInputsAutoLogged[io.length];
@@ -177,8 +176,6 @@ public class Vision extends SubsystemBase {
                     VecBuilder.fill(linearStdDev, linearStdDev, 999999));
             }
 
-            // pose = robotPoses.get(0).toPose2d();
-            fieldMap.setRobotPose(pose);
             // Log camera datadata
             Logger.recordOutput(
                 "Vision/Camera" + Integer.toString(cameraIndex) + "/TagPoses",
@@ -217,11 +214,6 @@ public class Vision extends SubsystemBase {
             Pose2d visionRobotPoseMeters,
             double timestampSeconds,
             Matrix<N3, N1> visionMeasurementStdDevs);
-    }
-
-    public void updateConsumer(VisionConsumer consumer)
-    {
-        this.consumer = consumer;
     }
 
     public Pose2d getPose()

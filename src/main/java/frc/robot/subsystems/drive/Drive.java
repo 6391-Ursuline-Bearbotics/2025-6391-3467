@@ -135,19 +135,17 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
     private final SwerveDrivePoseEstimator poseEstimator =
         new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions,
             new Pose2d());
-    private final Consumer<Pose2d> resetSimulationPoseCallBack;
+    private Consumer<Pose2d> resetSimulationPoseCallBack;
 
     public Drive(
         GyroIO gyroIO,
         ModuleIO flModuleIO,
         ModuleIO frModuleIO,
         ModuleIO blModuleIO,
-        ModuleIO brModuleIO,
-        Consumer<Pose2d> resetSimulationPoseCallBack)
+        ModuleIO brModuleIO)
     {
         SmartDashboard.putData("Robot Pose Field Map", fieldMap);
         this.gyroIO = gyroIO;
-        this.resetSimulationPoseCallBack = resetSimulationPoseCallBack;
         modules[0] = new Module(flModuleIO, 0, TunerConstants.FrontLeft);
         modules[1] = new Module(frModuleIO, 1, TunerConstants.FrontRight);
         modules[2] = new Module(blModuleIO, 2, TunerConstants.BackLeft);
@@ -427,5 +425,10 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
                 new Translation2d(TunerConstants.BackRight.LocationX,
                     TunerConstants.BackRight.LocationY)
         };
+    }
+
+    public void addQuestZero(Consumer<Pose2d> resetSimulationPoseCallBack)
+    {
+        this.resetSimulationPoseCallBack = resetSimulationPoseCallBack;
     }
 }
