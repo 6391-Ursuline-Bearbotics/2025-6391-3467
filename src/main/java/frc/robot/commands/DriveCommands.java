@@ -234,9 +234,9 @@ public class DriveCommands {
         TuneableProfiledPID alignController =
             new TuneableProfiledPID(
                 "alignController",
-                1,
+                0.6,
                 0.0,
-                0,
+                0.1,
                 20,
                 8);
         alignController.setGoal(0);

@@ -225,7 +225,7 @@ public class RobotContainer {
             m_drive,
             () -> -m_driver.getLeftY() * speedMultiplier,
             approachPose,
-            () -> m_vision.getPose());
+            () -> m_drive.getPose());
     }
 
     /** Button and Command mappings */
@@ -242,32 +242,32 @@ public class RobotContainer {
                         .getSimulatedDriveTrainPose()) // reset odometry to actual robot pose during
                 // simulation
                 : () -> m_drive.setPose(
-                    new Pose2d(m_vision.getPose().getTranslation(), new Rotation2d())); // zero gyro
+                    new Pose2d(m_drive.getPose().getTranslation(), new Rotation2d())); // zero gyro
         m_driver.start().onTrue(Commands.runOnce(resetGyro, m_drive).ignoringDisable(true));
 
         // Driver Right Bumper: Approach Nearest Right-Side Reef Branch
         m_driver.rightBumper().and(() -> !m_profiledElevator.isAlgae())
             .whileTrue(Commands.either(
                 joystickApproach(
-                    () -> FieldConstants.getNearestReefBranch(m_vision.getPose(), ReefSide.RIGHT)),
+                    () -> FieldConstants.getNearestReefBranch(m_drive.getPose(), ReefSide.RIGHT)),
                 joystickDriveAtAngle(
-                    () -> FieldConstants.getNearestCoralStation(m_vision.getPose()).getRotation()),
+                    () -> FieldConstants.getNearestCoralStation(m_drive.getPose()).getRotation()),
                 m_ClawRollerDS.triggered));
 
         // Driver Left Bumper: Approach Nearest Left-Side Reef Branch
         m_driver.leftBumper().and(() -> !m_profiledElevator.isAlgae())
             .whileTrue(Commands.either(
                 joystickApproach(
-                    () -> FieldConstants.getNearestReefBranch(m_vision.getPose(), ReefSide.LEFT)),
+                    () -> FieldConstants.getNearestReefBranch(m_drive.getPose(), ReefSide.LEFT)),
                 joystickDriveAtAngle(
-                    () -> FieldConstants.getNearestCoralStation(m_vision.getPose()).getRotation()),
+                    () -> FieldConstants.getNearestCoralStation(m_drive.getPose()).getRotation()),
                 m_ClawRollerDS.triggered));
 
-        // Driver or Operator Right Bumper and Algae mode: Approach Nearest Reef Face
+        // Driver Right Bumper and Algae mode: Approach Nearest Reef Face
         m_driver.rightBumper().and(() -> m_profiledElevator.isAlgae())
-            .or(m_operator.rightBumper().and(() -> m_profiledElevator.isAlgae()))
+            .and(() -> m_profiledElevator.isAlgae())
             .whileTrue(
-                joystickApproach(() -> FieldConstants.getNearestReefFace(m_vision.getPose())));
+                joystickApproach(() -> FieldConstants.getNearestReefFace(m_drive.getPose())));
 
         // Driver A Button: Send Arm and Elevator to LEVEL_1
         m_driver.a().or(m_operator.a())
@@ -314,10 +314,9 @@ public class RobotContainer {
                 .andThen(Commands.waitUntil(m_ClawRollerDS.triggered.negate()))
                 .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL))
                 // backup after shoot
-                .andThen(Commands.startEnd(
-                    () -> DriveCommands.joystickDriveRobot(m_drive, () -> -0.15, () -> 0,
-                        () -> 0),
-                    () -> Commands.runOnce(() -> m_drive.stop())).withTimeout(0.4).asProxy())
+                .andThen(DriveCommands.joystickDriveRobot(m_drive, () -> -0.15, () -> 0,
+                    () -> 0).withTimeout(0.4).andThen(Commands.runOnce(() -> m_drive.stop()))
+                    .asProxy())
                 .andThen(Commands.runOnce(() -> speedMultiplier = 1.0))
                 .andThen(m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
                     Elevator.State.CORAL_INTAKE))
@@ -339,10 +338,9 @@ public class RobotContainer {
                 .andThen(Commands.waitUntil(m_ClawRollerDS.triggered.negate()))
                 .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL))
                 // backup after shoot
-                .andThen(Commands.startEnd(
-                    () -> DriveCommands.joystickDriveRobot(m_drive, () -> -0.15, () -> 0,
-                        () -> 0),
-                    () -> Commands.runOnce(() -> m_drive.stop())).withTimeout(0.4).asProxy())
+                .andThen(DriveCommands.joystickDriveRobot(m_drive, () -> -0.15, () -> 0,
+                    () -> 0).withTimeout(0.4).andThen(Commands.runOnce(() -> m_drive.stop()))
+                    .asProxy())
                 .andThen(Commands.runOnce(() -> speedMultiplier = 0.5))
                 .andThen(m_clawRoller.setStateCommand(ClawRoller.State.EJECT))
                 .andThen(Commands.either(m_superStruct.getTransitionCommand(Arm.State.ALGAE_LOW,
@@ -380,10 +378,9 @@ public class RobotContainer {
                     .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL))
                     .withTimeout(1))
                 // backup after shoot
-                .andThen(Commands.startEnd(
-                    () -> DriveCommands.joystickDriveRobot(m_drive, () -> -0.15, () -> 0,
-                        () -> 0),
-                    () -> Commands.runOnce(() -> m_drive.stop())).withTimeout(0.5).asProxy())
+                .andThen(DriveCommands.joystickDriveRobot(m_drive, () -> -0.15, () -> 0,
+                    () -> 0).withTimeout(0.4).andThen(Commands.runOnce(() -> m_drive.stop()))
+                    .asProxy())
                 .andThen(Commands.runOnce(() -> speedMultiplier = 1.0))
                 .andThen(m_clawRoller.setStateCommand(ClawRoller.State.INTAKE))
                 .andThen(m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
@@ -404,10 +401,9 @@ public class RobotContainer {
                     .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL))
                     .withTimeout(1))
                 // backup after shoot
-                .andThen(Commands.startEnd(
-                    () -> DriveCommands.joystickDriveRobot(m_drive, () -> -0.15, () -> 0,
-                        () -> 0),
-                    () -> Commands.runOnce(() -> m_drive.stop())).withTimeout(0.5).asProxy())
+                .andThen(DriveCommands.joystickDriveRobot(m_drive, () -> -0.15, () -> 0,
+                    () -> 0).withTimeout(0.4).andThen(Commands.runOnce(() -> m_drive.stop()))
+                    .asProxy())
                 .andThen(Commands.runOnce(() -> speedMultiplier = 0.5))
                 .andThen(m_clawRoller.setStateCommand(ClawRoller.State.EJECT))
                 .andThen(Commands.either(m_superStruct.getTransitionCommand(Arm.State.ALGAE_LOW,
