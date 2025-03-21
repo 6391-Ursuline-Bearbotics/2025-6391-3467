@@ -223,7 +223,7 @@ public class RobotContainer {
     {
         return DriveCommands.joystickApproach(
             m_drive,
-            () -> -m_driver.getLeftY() * 0.3,
+            () -> -m_driver.getLeftY() * 0.5,
             approachPose,
             () -> m_drive.getPose());
     }
@@ -232,7 +232,7 @@ public class RobotContainer {
     {
         return DriveCommands.joystickApproach(
             m_drive,
-            () -> 0.1,
+            () -> 0.3,
             approachPose,
             () -> m_drive.getPose());
     }

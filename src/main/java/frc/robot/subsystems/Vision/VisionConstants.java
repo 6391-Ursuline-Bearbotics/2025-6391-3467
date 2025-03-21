@@ -55,8 +55,8 @@ public class VisionConstants {
     // (Adjust to trust some cameras more than others)
     public static double[] cameraStdDevFactors =
         new double[] {
-                1.0, // Camera 0
-                1.0 // Camera 1
+                0.5, // Camera 0
+                0.5 // Camera 1
         };
 
     public static List<Integer> rejectedTags = Arrays.asList(3, 4, 5, 14, 15, 16);
