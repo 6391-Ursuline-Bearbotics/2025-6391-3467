@@ -7,13 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Cage-E L2"
+            "pathName": "Cage-E Crazy"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "ShootL2"
+            "name": "ApproachLeft"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
           }
         },
         {
@@ -43,13 +49,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "SourceTop-F L2"
+            "pathName": "SourceTop-D"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "ShootL2"
+            "name": "ApproachRight"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
           }
         },
         {
@@ -61,7 +73,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "F-SourceTop"
+            "pathName": "D-SourceTop"
           }
         },
         {

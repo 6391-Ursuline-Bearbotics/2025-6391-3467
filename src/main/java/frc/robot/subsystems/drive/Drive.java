@@ -79,7 +79,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
     // PathPlanner config constants
     private static final double ROBOT_MASS_KG = 50.14;
     private static final double ROBOT_MOI = 5.10;
-    private static final double WHEEL_COF = 1.13; // https://www.chiefdelphi.com/t/vexpro-new-products-2023-2024/446005/91?
+    private static final double WHEEL_COF = 1.06; // https://www.chiefdelphi.com/t/vexpro-new-products-2023-2024/446005/111
     private static final RobotConfig PP_CONFIG =
         new RobotConfig(
             ROBOT_MASS_KG,

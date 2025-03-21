@@ -223,7 +223,16 @@ public class RobotContainer {
     {
         return DriveCommands.joystickApproach(
             m_drive,
-            () -> -m_driver.getLeftY() * speedMultiplier,
+            () -> -m_driver.getLeftY() * 0.3,
+            approachPose,
+            () -> m_drive.getPose());
+    }
+
+    private Command autoApproach(Supplier<Pose2d> approachPose)
+    {
+        return DriveCommands.joystickApproach(
+            m_drive,
+            () -> 0.1,
             approachPose,
             () -> m_drive.getPose());
     }
@@ -522,6 +531,12 @@ public class RobotContainer {
         // Score Coral on L2
         NamedCommands.registerCommand("ShootL2",
             m_clawRoller.setStateCommand(ClawRoller.State.SCORE));
+
+        NamedCommands.registerCommand("ApproachRight", autoApproach(
+            () -> FieldConstants.getNearestReefBranch(m_drive.getPose(), ReefSide.RIGHT)));
+
+        NamedCommands.registerCommand("ApproachLeft", autoApproach(
+            () -> FieldConstants.getNearestReefBranch(m_drive.getPose(), ReefSide.LEFT)));
     }
 
     /**
