@@ -13,6 +13,12 @@
         {
           "type": "named",
           "data": {
+            "name": "ApproachLeft"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "Shoot"
           }
         },
@@ -44,6 +50,12 @@
           "type": "path",
           "data": {
             "pathName": "SourceTop-D"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ApproachRight"
           }
         },
         {

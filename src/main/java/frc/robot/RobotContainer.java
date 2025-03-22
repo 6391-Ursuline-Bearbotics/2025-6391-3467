@@ -118,15 +118,10 @@ public class RobotContainer {
                 m_drive =
                     new Drive(
                         new GyroIOSim(this.m_driveSimulation.getGyroSimulation()),
-                        new ModuleIOTalonFXSim(
-                            TunerConstants.FrontLeft, this.m_driveSimulation.getModules()[0]),
-                        new ModuleIOTalonFXSim(
-                            TunerConstants.FrontRight, this.m_driveSimulation.getModules()[1]),
-                        new ModuleIOTalonFXSim(
-                            TunerConstants.BackLeft, this.m_driveSimulation.getModules()[2]),
-                        new ModuleIOTalonFXSim(
-                            TunerConstants.BackRight, this.m_driveSimulation.getModules()[3]));
-
+                        new ModuleIOSim(TunerConstants.FrontLeft),
+                        new ModuleIOSim(TunerConstants.FrontRight),
+                        new ModuleIOSim(TunerConstants.BackLeft),
+                        new ModuleIOSim(TunerConstants.BackRight));
 
                 m_profiledArm = new Arm(new ArmIOSim(), true);
                 m_profiledElevator = new Elevator(new ElevatorIOSim(), true);
@@ -234,7 +229,7 @@ public class RobotContainer {
             m_drive,
             () -> 0.3,
             approachPose,
-            () -> m_drive.getPose());
+            () -> m_drive.getPose()).withTimeout(1);
     }
 
     /** Button and Command mappings */
@@ -256,25 +251,24 @@ public class RobotContainer {
 
         // Driver Right Bumper: Approach Nearest Right-Side Reef Branch
         m_driver.rightBumper().and(() -> !m_profiledElevator.isAlgae())
-            .whileTrue(Commands.either(
+            .whileTrue(Commands.runOnce(() -> m_vision.useLeft(true)).andThen(Commands.either(
                 joystickApproach(
                     () -> FieldConstants.getNearestReefBranch(m_drive.getPose(), ReefSide.RIGHT)),
                 joystickDriveAtAngle(
                     () -> FieldConstants.getNearestCoralStation(m_drive.getPose()).getRotation()),
-                m_ClawRollerDS.triggered));
+                m_ClawRollerDS.triggered)));
 
         // Driver Left Bumper: Approach Nearest Left-Side Reef Branch
         m_driver.leftBumper().and(() -> !m_profiledElevator.isAlgae())
-            .whileTrue(Commands.either(
+            .whileTrue(Commands.runOnce(() -> m_vision.useLeft(false)).andThen(Commands.either(
                 joystickApproach(
                     () -> FieldConstants.getNearestReefBranch(m_drive.getPose(), ReefSide.LEFT)),
                 joystickDriveAtAngle(
                     () -> FieldConstants.getNearestCoralStation(m_drive.getPose()).getRotation()),
-                m_ClawRollerDS.triggered));
+                m_ClawRollerDS.triggered)));
 
         // Driver Right Bumper and Algae mode: Approach Nearest Reef Face
-        m_driver.rightBumper().and(() -> m_profiledElevator.isAlgae())
-            .and(() -> m_profiledElevator.isAlgae())
+        m_driver.rightBumper().or(m_driver.leftBumper()).and(() -> m_profiledElevator.isAlgae())
             .whileTrue(
                 joystickApproach(() -> FieldConstants.getNearestReefFace(m_drive.getPose())));
 
