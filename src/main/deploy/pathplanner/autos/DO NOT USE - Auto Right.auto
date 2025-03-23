@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Cage-E Crazy"
+            "pathName": "Cage-E"
           }
         },
         {
@@ -67,7 +67,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.3
+            "waitTime": 0.5
           }
         },
         {

@@ -13,13 +13,19 @@
         {
           "type": "named",
           "data": {
-            "name": "ShootL2"
+            "name": "ApproachRight"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.3
+            "waitTime": 0.5
           }
         },
         {
@@ -49,13 +55,19 @@
         {
           "type": "named",
           "data": {
-            "name": "ShootL2"
+            "name": "ApproachLeft"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.3
+            "waitTime": 0.5
           }
         },
         {
