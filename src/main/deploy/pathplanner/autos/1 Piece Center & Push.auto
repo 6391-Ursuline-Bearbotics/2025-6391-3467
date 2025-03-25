@@ -13,13 +13,25 @@
         {
           "type": "named",
           "data": {
+            "name": "ApproachRight"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "Shoot"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 1.0
+            "waitTime": 0.3
           }
         },
         {
@@ -44,6 +56,24 @@
           "type": "path",
           "data": {
             "pathName": "TopSource-K"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ApproachLeft"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
           }
         }
       ]

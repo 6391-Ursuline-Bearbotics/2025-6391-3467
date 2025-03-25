@@ -227,9 +227,9 @@ public class RobotContainer {
     {
         return DriveCommands.joystickApproach(
             m_drive,
-            () -> 0.3,
+            () -> 0.27,
             approachPose,
-            () -> m_drive.getPose()).withTimeout(1.5);
+            () -> m_drive.getPose()).withTimeout(0.5);
     }
 
     /** Button and Command mappings */
@@ -346,10 +346,10 @@ public class RobotContainer {
                     .asProxy())
                 .andThen(Commands.runOnce(() -> speedMultiplier = 0.5))
                 .andThen(m_clawRoller.setStateCommand(ClawRoller.State.EJECT))
-                .andThen(Commands.either(m_superStruct.getTransitionCommand(Arm.State.ALGAE_LOW,
-                    Elevator.State.ALGAE_LOW),
-                    m_superStruct.getTransitionCommand(Arm.State.ALGAE_HIGH,
-                        Elevator.State.ALGAE_HIGH),
+                .andThen(Commands.either(m_superStruct.getTransitionCommand(Arm.State.LEVEL_2,
+                    Elevator.State.LEVEL_2),
+                    m_superStruct.getTransitionCommand(Arm.State.LEVEL_3,
+                        Elevator.State.LEVEL_3),
                     m_operator.leftBumper())));
 
         // Place Coral on L1
@@ -409,10 +409,10 @@ public class RobotContainer {
                     .asProxy())
                 .andThen(Commands.runOnce(() -> speedMultiplier = 0.5))
                 .andThen(m_clawRoller.setStateCommand(ClawRoller.State.EJECT))
-                .andThen(Commands.either(m_superStruct.getTransitionCommand(Arm.State.ALGAE_LOW,
-                    Elevator.State.ALGAE_LOW),
-                    m_superStruct.getTransitionCommand(Arm.State.ALGAE_HIGH,
-                        Elevator.State.ALGAE_HIGH),
+                .andThen(Commands.either(m_superStruct.getTransitionCommand(Arm.State.LEVEL_2,
+                    Elevator.State.LEVEL_2),
+                    m_superStruct.getTransitionCommand(Arm.State.LEVEL_3,
+                        Elevator.State.LEVEL_3),
                     m_operator.leftBumper())));
 
         // Intake coral from chute if you don't already have one
@@ -526,11 +526,13 @@ public class RobotContainer {
         NamedCommands.registerCommand("ShootL2",
             m_clawRoller.setStateCommand(ClawRoller.State.SCORE));
 
-        NamedCommands.registerCommand("ApproachRight", autoApproach(
-            () -> FieldConstants.getNearestReefBranch(m_drive.getPose(), ReefSide.RIGHT)));
+        NamedCommands.registerCommand("ApproachRight",
+            Commands.runOnce(() -> m_vision.useLeft(true)).andThen(autoApproach(
+                () -> FieldConstants.getNearestReefBranch(m_drive.getPose(), ReefSide.RIGHT))));
 
-        NamedCommands.registerCommand("ApproachLeft", autoApproach(
-            () -> FieldConstants.getNearestReefBranch(m_drive.getPose(), ReefSide.LEFT)));
+        NamedCommands.registerCommand("ApproachLeft",
+            Commands.runOnce(() -> m_vision.useLeft(false)).andThen(autoApproach(
+                () -> FieldConstants.getNearestReefBranch(m_drive.getPose(), ReefSide.LEFT))));
     }
 
     /**
