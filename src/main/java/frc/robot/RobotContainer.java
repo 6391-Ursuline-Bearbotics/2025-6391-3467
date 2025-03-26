@@ -31,14 +31,14 @@ import frc.robot.subsystems.Claw.ClawRollerDS.ClawRollerDS;
 import frc.robot.subsystems.Claw.ClawRollerDS.ClawRollerDSIO;
 import frc.robot.subsystems.Claw.ClawRollerDS.ClawRollerDSIOReal;
 import frc.robot.subsystems.Claw.ClawRollerDS.ClawRollerDSIOSim;
-import frc.robot.subsystems.Claw.IntakeDS.IntakeDS;
-import frc.robot.subsystems.Claw.IntakeDS.IntakeDSIO;
-import frc.robot.subsystems.Claw.IntakeDS.IntakeDSIOReal;
-import frc.robot.subsystems.Claw.IntakeDS.IntakeDSIOSim;
 import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.Climber.ClimberIO;
 import frc.robot.subsystems.Climber.ClimberIOSim;
 import frc.robot.subsystems.Climber.ClimberIOTalonFX;
+import frc.robot.subsystems.Climber.ClimberDS.ClimberDS;
+import frc.robot.subsystems.Climber.ClimberDS.ClimberDSIO;
+import frc.robot.subsystems.Climber.ClimberDS.ClimberDSIOReal;
+import frc.robot.subsystems.Climber.ClimberDS.ClimberDSIOSim;
 import frc.robot.subsystems.Elevator.*;
 import frc.robot.subsystems.Vision.*;
 import frc.robot.subsystems.drive.*;
@@ -73,7 +73,7 @@ public class RobotContainer {
     private final Climber m_profiledClimber;
     public final ClawRoller m_clawRoller;
     public final ClawRollerDS m_ClawRollerDS;
-    public final IntakeDS m_IntakeDS;
+    public final ClimberDS m_ClimberDS;
     public final Superstructure m_superStruct;
 
     public final Vision m_vision;
@@ -105,7 +105,7 @@ public class RobotContainer {
                 m_profiledClimber = new Climber(new ClimberIOTalonFX(), false);
                 m_clawRoller = new ClawRoller(new ClawRollerIOTalonFX(), false);
                 m_ClawRollerDS = new ClawRollerDS(new ClawRollerDSIOReal());
-                m_IntakeDS = new IntakeDS(new IntakeDSIOReal());
+                m_ClimberDS = new ClimberDS(new ClimberDSIOReal());
 
                 break;
 
@@ -128,7 +128,7 @@ public class RobotContainer {
                 m_profiledClimber = new Climber(new ClimberIOSim(), true);
                 m_clawRoller = new ClawRoller(new ClawRollerIOSim(), true);
                 m_ClawRollerDS = new ClawRollerDS(new ClawRollerDSIOSim());
-                m_IntakeDS = new IntakeDS(new IntakeDSIOSim());
+                m_ClimberDS = new ClimberDS(new ClimberDSIOSim());
 
                 m_vision = new Vision(m_drive);
                 m_drive.addQuestZero(m_vision::zeroQuest);
@@ -149,7 +149,7 @@ public class RobotContainer {
                 m_profiledClimber = new Climber(new ClimberIO() {}, true);
                 m_clawRoller = new ClawRoller(new ClawRollerIO() {}, true);
                 m_ClawRollerDS = new ClawRollerDS(new ClawRollerDSIO() {});
-                m_IntakeDS = new IntakeDS(new IntakeDSIO() {});
+                m_ClimberDS = new ClimberDS(new ClimberDSIO() {});
 
                 m_vision = new Vision(m_drive);
                 m_drive.addQuestZero(m_vision::zeroQuest);
@@ -481,6 +481,9 @@ public class RobotContainer {
 
         Trigger driverRumble = new Trigger(() -> m_vision.hasNewTarget && rumbleReady);
         driverRumble.onTrue(m_driver.rumbleForTime(1).andThen(() -> rumbleReady = false));
+
+        Trigger opRumble = new Trigger(() -> m_ClimberDS.isTriggered());
+        opRumble.onTrue(m_operator.rumbleForTime(1));
     }
 
     /**

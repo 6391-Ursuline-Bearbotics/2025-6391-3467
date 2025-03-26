@@ -1,14 +1,14 @@
-package frc.robot.subsystems.Claw.IntakeDS;
+package frc.robot.subsystems.Climber.ClimberDS;
 
 import frc.robot.Ports;
 import frc.robot.subsystems.GenericDigitalSensorSubsystem.GenericDigitalSensorSubsystemConstants;
 
-public class IntakeDSConstants {
+public class ClimberDSConstants {
     public static final GenericDigitalSensorSubsystemConstants kSubSysConstants =
         new GenericDigitalSensorSubsystemConstants();
 
     static {
-        kSubSysConstants.kName = "IntakeDS";
-        kSubSysConstants.digitalPort = Ports.RAMP_DIGITAL;
+        kSubSysConstants.kName = "ClimberDS";
+        kSubSysConstants.digitalPort = Ports.CLIMBER_DIGITAL;
     }
 }
