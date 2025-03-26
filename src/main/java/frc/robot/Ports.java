@@ -14,7 +14,7 @@ public class Ports {
 
     public static final CanDeviceId ARM_MAIN = new CanDeviceId(60, "rio");
 
-    public static final Integer CLIMBER_DIGITAL = 1;
+    public static final Integer CLIMBER_DIGITAL = 2;
     public static final CanDeviceId ELEVATOR_MAIN = new CanDeviceId(51, "rio");
     public static final CanDeviceId ELEVATOR_FOLLOWER = new CanDeviceId(50, "rio");
 
