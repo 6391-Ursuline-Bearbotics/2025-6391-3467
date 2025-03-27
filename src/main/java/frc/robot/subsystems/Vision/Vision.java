@@ -102,11 +102,7 @@ public class Vision extends SubsystemBase {
         // Loop over cameras
         for (int cameraIndex = 0; cameraIndex < io.length; cameraIndex++) {
             // If useLeft skip right camera (2) if not skip left camera (1)
-            if (useLeft && cameraIndex == 2) {
-                continue;
-            } else if (!useLeft && cameraIndex == 1) {
-                continue;
-            }
+
             // Update disconnected alert
             disconnectedAlerts[cameraIndex].set(!inputs[cameraIndex].connected);
 
