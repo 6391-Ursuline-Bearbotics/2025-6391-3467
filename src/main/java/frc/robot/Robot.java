@@ -224,9 +224,7 @@ public class Robot extends LoggedRobot {
     @Override
     public void teleopInit()
     {
-        m_robotContainer.m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
-            Elevator.State.CORAL_INTAKE)
-            .andThen(m_robotContainer.m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL));
+
 
         // This makes sure that the autonomous stops running when
         // teleop starts running. If you want the autonomous to
@@ -235,6 +233,9 @@ public class Robot extends LoggedRobot {
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
         }
+        m_robotContainer.m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
+            Elevator.State.CORAL_INTAKE)
+            .andThen(m_robotContainer.m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL));
         Elastic.selectTab(1);
     }
 
