@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.085511363636364,
-        "y": 5.4260085227272725
+        "x": 5.1780405405405405,
+        "y": 5.536908783783783
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.235085227272728,
-        "y": 6.37330965909091
+        "x": 5.327614404176905,
+        "y": 6.48420992014742
       },
       "isLocked": false,
       "linkedName": "Left-Wall-J"
@@ -45,8 +45,8 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 2.5,
-    "maxAcceleration": 2.5,
+    "maxVelocity": 2.0,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
