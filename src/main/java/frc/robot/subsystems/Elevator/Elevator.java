@@ -35,7 +35,7 @@ public class Elevator extends GenericMotionProfiledSubsystem<Elevator.State> {
         HOMING(new ProfileType.OPEN_VOLTAGE(() -> homingTuning.getAsDouble())),
         CORAL_INTAKE(new ProfileType.MM_POSITION(() -> BOTTOM)),
         LEVEL_1(new ProfileType.MM_POSITION(() -> BOTTOM)),
-        LEVEL_2(new ProfileType.MM_POSITION(() -> 2.1)),
+        LEVEL_2(new ProfileType.MM_POSITION(() -> 1.9)), // 2.1
         LEVEL_3(new ProfileType.MM_POSITION(() -> 5.0)), // 5.1
         LEVEL_4(new ProfileType.MM_POSITION(() -> 9.50)),
         ALGAE_LOW(new ProfileType.MM_POSITION(() -> 5.3)), // 5.5
