@@ -229,7 +229,7 @@ public class RobotContainer {
             m_drive,
             () -> 0.27,
             approachPose,
-            () -> m_drive.getPose()).withTimeout(0.5);
+            () -> m_drive.getPose()).withTimeout(1.0);
     }
 
     /** Button and Command mappings */
