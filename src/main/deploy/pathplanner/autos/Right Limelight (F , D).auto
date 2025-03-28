@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "WALL to J"
+            "pathName": "Cage-F"
           }
         },
         {
@@ -37,7 +37,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Left-Wall-J-source"
+            "pathName": "VISION_F-SourceTop"
           }
         },
         {
@@ -49,19 +49,19 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0
+            "waitTime": 0.0
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "LEFT SOURCE I"
+            "pathName": "SourceTop-D"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "ApproachLeft"
+            "name": "ApproachRight"
           }
         },
         {
@@ -85,7 +85,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LEFT i Source"
+            "pathName": "D-SourceTop"
           }
         },
         {
@@ -95,9 +95,9 @@
           }
         },
         {
-          "type": "path",
+          "type": "wait",
           "data": {
-            "pathName": "TopSource-L"
+            "waitTime": 0.0
           }
         }
       ]

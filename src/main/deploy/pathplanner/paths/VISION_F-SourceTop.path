@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.175255681818181,
-        "y": 3.1524857954545458
+        "x": 5.316385135135135,
+        "y": 2.918243243243243
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.771630835380835,
-        "y": 1.9023088144963132
+        "x": 4.912760288697789,
+        "y": 1.6680662622850102
       },
       "isLocked": false,
-      "linkedName": "ReefF"
+      "linkedName": "VISION_Reef_F"
     },
     {
       "anchor": {

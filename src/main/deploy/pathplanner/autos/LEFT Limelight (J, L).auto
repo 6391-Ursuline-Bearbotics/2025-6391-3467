@@ -7,55 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Cage-E"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ApproachLeft"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.2
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.3
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "E-SourceTop"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Intake"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.0
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "SourceTop-D"
+            "pathName": "WALL to J"
           }
         },
         {
@@ -85,7 +37,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "D-SourceTop"
+            "pathName": "Left-Wall-J-source"
           }
         },
         {
@@ -97,13 +49,49 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.0
+            "waitTime": 0
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "SourceTop-C"
+            "pathName": "LEFT SOURCE L"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ApproachRight"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.3
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LEFT L Source"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake"
           }
         }
       ]
