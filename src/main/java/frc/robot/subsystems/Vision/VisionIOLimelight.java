@@ -38,6 +38,7 @@ public class VisionIOLimelight implements VisionIO {
     private final DoubleSubscriber tySubscriber;
     private final DoubleArraySubscriber megatag1Subscriber;
     private final DoubleArraySubscriber megatag2Subscriber;
+    private final UseTag useTag;
 
     /**
      * Creates a new VisionIOLimelight.
@@ -57,6 +58,7 @@ public class VisionIOLimelight implements VisionIO {
             table.getDoubleArrayTopic("botpose_wpiblue").subscribe(new double[] {});
         megatag2Subscriber =
             table.getDoubleArrayTopic("botpose_orb_wpiblue").subscribe(new double[] {});
+        useTag = UseTag.MT1;
     }
 
     @Override
@@ -81,52 +83,59 @@ public class VisionIOLimelight implements VisionIO {
         // Read new pose observations from NetworkTables
         Set<Integer> tagIds = new HashSet<>();
         List<PoseObservation> poseObservations = new LinkedList<>();
-        for (var rawSample : megatag1Subscriber.readQueue()) {
-            if (rawSample.value.length == 0)
-                continue;
-            for (int i = 11; i < rawSample.value.length; i += 7) {
-                tagIds.add((int) rawSample.value[i]);
+
+        if (useTag == UseTag.BOTH || useTag == useTag.MT1) {
+            for (var rawSample : megatag1Subscriber.readQueue()) {
+                if (rawSample.value.length == 0)
+                    continue;
+                for (int i = 11; i < rawSample.value.length; i += 7) {
+                    tagIds.add((int) rawSample.value[i]);
+                }
+                poseObservations.add(
+                    new PoseObservation(
+                        // Timestamp, based on server timestamp of publish and latency
+                        rawSample.timestamp * 1.0e-6 - rawSample.value[6] * 1.0e-3,
+
+                        // 3D pose estimate
+                        parsePose(rawSample.value),
+
+                        // Ambiguity, using only the first tag because ambiguity isn't applicable
+                        // for
+                        // multitag
+                        rawSample.value.length >= 18 ? rawSample.value[17] : 0.0,
+
+                        // Tag count
+                        (int) rawSample.value[7],
+
+                        // Average tag distance
+                        rawSample.value[9]));
             }
-            poseObservations.add(
-                new PoseObservation(
-                    // Timestamp, based on server timestamp of publish and latency
-                    rawSample.timestamp * 1.0e-6 - rawSample.value[6] * 1.0e-3,
-
-                    // 3D pose estimate
-                    parsePose(rawSample.value),
-
-                    // Ambiguity, using only the first tag because ambiguity isn't applicable for
-                    // multitag
-                    rawSample.value.length >= 18 ? rawSample.value[17] : 0.0,
-
-                    // Tag count
-                    (int) rawSample.value[7],
-
-                    // Average tag distance
-                    rawSample.value[9]));
         }
-        for (var rawSample : megatag2Subscriber.readQueue()) {
-            if (rawSample.value.length == 0)
-                continue;
-            for (int i = 11; i < rawSample.value.length; i += 7) {
-                tagIds.add((int) rawSample.value[i]);
+
+        if (useTag == UseTag.BOTH || useTag == useTag.MT2) {
+            for (var rawSample : megatag2Subscriber.readQueue()) {
+                if (rawSample.value.length == 0)
+                    continue;
+                for (int i = 11; i < rawSample.value.length; i += 7) {
+                    tagIds.add((int) rawSample.value[i]);
+                }
+                poseObservations.add(
+                    new PoseObservation(
+                        // Timestamp, based on server timestamp of publish and latency
+                        rawSample.timestamp * 1.0e-6 - rawSample.value[6] * 1.0e-3,
+
+                        // 3D pose estimate
+                        parsePose(rawSample.value),
+
+                        // Ambiguity, zeroed because the pose is already disambiguated
+                        0.0,
+
+                        // Tag count
+                        (int) rawSample.value[7],
+
+                        // Average tag distance
+                        rawSample.value[9]));
             }
-            poseObservations.add(
-                new PoseObservation(
-                    // Timestamp, based on server timestamp of publish and latency
-                    rawSample.timestamp * 1.0e-6 - rawSample.value[6] * 1.0e-3,
-
-                    // 3D pose estimate
-                    parsePose(rawSample.value),
-
-                    // Ambiguity, zeroed because the pose is already disambiguated
-                    0.0,
-
-                    // Tag count
-                    (int) rawSample.value[7],
-
-                    // Average tag distance
-                    rawSample.value[9]));
         }
 
         // Save pose observations to inputs object
@@ -154,5 +163,11 @@ public class VisionIOLimelight implements VisionIO {
                 Units.degreesToRadians(rawLLArray[3]),
                 Units.degreesToRadians(rawLLArray[4]),
                 Units.degreesToRadians(rawLLArray[5])));
+    }
+
+    public enum UseTag {
+        MT1,
+        MT2,
+        BOTH;
     }
 }
