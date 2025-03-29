@@ -495,23 +495,18 @@ public class RobotContainer {
         NamedCommands.registerCommand("L4",
             Commands.waitUntil(m_ClawRollerDS.triggered)
                 .andThen(
-                    m_superStruct.getTransitionCommand(Arm.State.LEVEL_4, Elevator.State.LEVEL_4,
-                        0.1,
-                        0.1)));
+                    m_superStruct.getTransitionCommand(Arm.State.LEVEL_4, Elevator.State.LEVEL_4)));
 
         // Go to the L2 Position
         NamedCommands.registerCommand("L2",
             Commands.waitUntil(m_ClawRollerDS.triggered)
                 .andThen(
-                    m_superStruct.getTransitionCommand(Arm.State.LEVEL_2, Elevator.State.LEVEL_2,
-                        0.1,
-                        0.1)));
+                    m_superStruct.getTransitionCommand(Arm.State.LEVEL_2, Elevator.State.LEVEL_2)));
 
         // Go to the Home Position
         NamedCommands.registerCommand("Home",
-            m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE, Elevator.State.CORAL_INTAKE,
-                0.1,
-                0.1));
+            m_superStruct.getTransitionCommand(Arm.State.CORAL_INTAKE,
+                Elevator.State.CORAL_INTAKE));
 
         // Move Elevator and Arm then wait for EE sensor to be triggered
         NamedCommands.registerCommand("Intake",
@@ -523,7 +518,10 @@ public class RobotContainer {
         // Score Coral on L4
         NamedCommands.registerCommand("Shoot",
             m_clawRoller.setStateCommand(ClawRoller.State.SCORE_L4)
-                .andThen(m_profiledArm.setStateCommand(Arm.State.LEVEL_4_BACK)));
+                .andThen(m_profiledArm.setStateCommand(Arm.State.LEVEL_4_BACK))
+                .andThen(Commands.waitUntil(m_ClawRollerDS.triggered.negate())
+                    .andThen(m_clawRoller.setStateCommand(ClawRoller.State.HOLDCORAL))
+                    .withTimeout(1)));
 
         // Score Coral on L2
         NamedCommands.registerCommand("ShootL2",
