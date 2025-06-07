@@ -10,8 +10,8 @@
   "autoFolders": [
     "PIDTesting"
   ],
-  "defaultMaxVel": 1.75,
-  "defaultMaxAccel": 1.5,
+  "defaultMaxVel": 1.8,
+  "defaultMaxAccel": 1.6,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,
   "defaultNominalVoltage": 12.0,
